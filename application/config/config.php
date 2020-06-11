@@ -39,7 +39,7 @@ $config['app_subname'] = 'Sistema de Controle de Ordens de Serviço';
 | a PHP script and you can easily do that on your own.
 |
 */
-$config['base_url'] = $_EVN['base_url'];
+$config['base_url'] = getenv('base_url');
 
 /*
 |--------------------------------------------------------------------------

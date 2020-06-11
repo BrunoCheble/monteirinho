@@ -57,8 +57,6 @@
 
 //set the environment to production after installation
 define('ENVIRONMENT', 'production');
-print_r(getenv('hostname'));
-die;
 // we don't want to access the main project before installation. redirect to installation page
 if (ENVIRONMENT === 'pre_installation') {
     $domain = $_SERVER['HTTP_HOST'] . $_SERVER['SCRIPT_NAME'];
