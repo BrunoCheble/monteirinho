@@ -17,6 +17,7 @@ class Clientes_model extends CI_Model
     {
         $this->db->select($fields);
         $this->db->from($table);
+        $this->db->join('usuarios', 'usuarios.idUsuarios = clientes.cadastradoPor');
         $this->db->order_by('idClientes', 'desc');
         $this->db->limit($perpage, $start);
         if ($where) {
@@ -124,7 +125,9 @@ class Clientes_model extends CI_Model
      */
     public function getAllVendasByClient($id)
     {
+        $this->db->select('vendas.*, usuarios.nome as usuario');
         $this->db->where('clientes_id', $id);
+        $this->db->join('usuarios', 'usuarios.idUsuarios = vendas.usuarios_id');
         return $this->db->get('vendas')->result();
     }
 

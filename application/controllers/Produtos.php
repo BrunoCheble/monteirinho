@@ -31,15 +31,8 @@ class Produtos extends MY_Controller
             $this->session->set_flashdata('error', 'Você não tem permissão para visualizar produtos.');
             redirect(base_url());
         }
-
-        $this->load->library('pagination');
-
-        $this->data['configuration']['base_url'] = site_url('produtos/gerenciar/');
-        $this->data['configuration']['total_rows'] = $this->produtos_model->count('produtos');
-
-        $this->pagination->initialize($this->data['configuration']);
-
-        $this->data['results'] = $this->produtos_model->get('produtos', '*', '', $this->data['configuration']['per_page'], $this->uri->segment(3));
+        
+        $this->data['table_produtos'] = $this->get_table();
 
         $this->data['view'] = 'produtos/produtos';
         return $this->layout();
@@ -204,5 +197,58 @@ class Produtos extends MY_Controller
         } else {
             $this->data['custom_error'] = '<div class="alert">Ocorreu um erro.</div>';
         }
+    }
+
+    public function get_table() {
+        $produtos = $this->produtos_model->get('produtos', '*', '', $this->data['configuration']['per_page'], $this->uri->segment(3));
+
+        foreach ($produtos as $produto) {
+            
+            if($this->session->userdata('permission') == 2) {
+                $actions = [];
+                if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vProduto')) {
+                    $actions[] = '<a style="margin-right: 1%" href="' . base_url() . 'index.php/produtos/visualizar/' . $produto->idProdutos . '" class="btn tip-top" title="Visualizar Produto"><i class="fas fa-eye"></i></a>  ';
+                }
+                if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eProduto')) {
+                    $actions[] = '<a style="margin-right: 1%" href="' . base_url() . 'index.php/produtos/editar/' . $produto->idProdutos . '" class="btn btn-info tip-top" title="Editar Produto"><i class="fas fa-edit"></i></a>';
+                }
+                if ($this->permission->checkPermission($this->session->userdata('permissao'), 'dProduto')) {
+                    $actions[] = '<a style="margin-right: 1%" href="#modal-excluir" role="button" data-toggle="modal" produto="' . $produto->idProdutos . '" class="btn btn-danger tip-top" title="Excluir Produto"><i class="fas fa-trash-alt"></i></a>';
+                }
+                if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eProduto')) {
+                    $actions[] = '<a href="#atualizar-estoque" role="button" data-toggle="modal" produto="' . $produto->idProdutos . '" estoque="' . $produto->estoque . '" class="btn btn-primary tip-top" title="Atualizar Estoque"><i class="fas fa-plus-square"></i></a>';
+                }
+
+                $data = [
+                    $produto->codDeBarra,
+                    $produto->descricao,
+                    ['data' => $produto->estoque, 'style' => 'text-align: center'],
+                    ['data' => $produto->estoqueMinimo, 'style' => 'text-align: center'],
+                    ['data' => 'R$ '.number_format($produto->precoCompra, 2, ',', '.'), 'style' => 'text-align: right'],
+                    ['data' => 'R$ '.number_format($produto->precoVenda, 2, ',', '.'), 'style' => 'text-align: right'],
+                    ['data' => implode(' ',$actions), 'style' => 'text-align: center; width: 200px'],
+                ];
+            }
+            else {
+                $data = [
+                    $produto->codDeBarra,
+                    $produto->descricao,
+                    ['data' => $produto->estoque, 'style' => 'text-align: center'],
+                    ['data' => 'R$ '.number_format($produto->precoVenda, 2, ',', '.'), 'style' => 'text-align: right'],
+                ];
+            }
+
+            $this->table->add_row($data);
+        }
+        
+        $this->table->set_template(['table_open' => '<table class="table table-bordered">']);
+        
+        if($this->session->userdata('permission') == 2) {
+            $this->table->set_heading('Cod. Produto','Nome', 'Estoque Atual','Estoque Mín','Preço Compra', 'Preço Venda','Ações');
+        }
+        else {
+            $this->table->set_heading('Cod. Produto','Nome', 'Estoque Atual','Preço Venda');
+        }
+        return $this->table->generate();
     }
 }

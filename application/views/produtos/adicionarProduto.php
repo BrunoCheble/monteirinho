@@ -38,7 +38,7 @@
                 <?php echo $custom_error; ?>
                 <form action="<?php echo current_url(); ?>" id="formProduto" method="post" class="form-horizontal">
                     <div class="control-group">
-                        <label for="codDeBarra" class="control-label">Código de Barra<span class=""></span></label>
+                        <label for="codDeBarra" class="control-label">Código<span class=""></span></label>
                         <div class="controls">
                             <input id="codDeBarra" type="text" name="codDeBarra" value="<?php echo set_value('codDeBarra'); ?>" />
                         </div>
@@ -46,7 +46,7 @@
                     <div class="control-group">
                         <label for="descricao" class="control-label">Descrição<span class="required">*</span></label>
                         <div class="controls">
-                            <input id="descricao" type="text" name="descricao" value="<?php echo set_value('descricao'); ?>" />
+                            <input id="descricao" style="width: 300px;" type="text" name="descricao" value="<?php echo set_value('descricao'); ?>" />
                         </div>
                     </div>
                     <div class="control-group">
@@ -74,12 +74,12 @@
                             <input id="precoVenda" class="money" type="text" name="precoVenda" value="<?php echo set_value('precoVenda'); ?>" />
                         </div>
                     </div>
-                    <div class="control-group">
+                    <div style="display:none" class="control-group">
                         <label for="unidade" class="control-label">Unidade<span class="required">*</span></label>
                         <div class="controls">
                             <!--<input id="unidade" type="text" name="unidade" value="<?php echo set_value('unidade'); ?>"  />-->
                             <select id="unidade" name="unidade">
-                                <option value="UN">Unidade</option>
+                                <option selected value="UN">Unidade</option>
                                 <option value="KG">Kilograma</option>
                                 <option value="LT">Litro</option>
                                 <option value="CX">Caixa</option>

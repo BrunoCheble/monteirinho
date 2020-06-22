@@ -33,104 +33,7 @@ class Financeiro extends MY_Controller
         $where = '';
         $periodo = $this->input->get('periodo');
         $situacao = $this->input->get('situacao');
-
-        // busca todos os lançamentos
-        if ($periodo == 'todos') {
-            if ($situacao == 'previsto') {
-                $where = 'data_vencimento > "' . date('Y-m-d') . '" AND baixado = "0"';
-            } else {
-                if ($situacao == 'atrasado') {
-                    $where = 'data_vencimento < "' . date('Y-m-d') . '" AND baixado = "0"';
-                } else {
-                    if ($situacao == 'realizado') {
-                        $where = 'baixado = "1"';
-                    }
-
-                    if ($situacao == 'pendente') {
-                        $where = 'baixado = "0"';
-                    }
-                }
-            }
-        } else {
-
-            // busca lançamentos do dia
-            if ($periodo == null || $periodo == 'dia') {
-                $where = 'data_vencimento = "' . date('Y-m-d' . '"');
-            } // fim lançamentos dia
-
-            else {
-
-                // busca lançamentos da semana
-                if ($periodo == 'semana') {
-                    $semana = $this->getThisWeek();
-
-                    if (!isset($situacao) || $situacao == 'todos') {
-                        $where = 'data_vencimento BETWEEN "' . $semana[0] . '" AND "' . $semana[1] . '"';
-                    } else {
-                        if ($situacao == 'previsto') {
-                            $where = 'data_vencimento BETWEEN "' . date('Y-m-d') . '" AND "' . $semana[1] . '" AND baixado = "0"';
-                        } else {
-                            if ($situacao == 'atrasado') {
-                                $where = 'data_vencimento BETWEEN "' . $semana[0] . '" AND "' . date('Y-m-d') . '" AND baixado = "0"';
-                            } else {
-                                if ($situacao == 'realizado') {
-                                    $where = 'data_vencimento BETWEEN "' . $semana[0] . '" AND "' . $semana[1] . '" AND baixado = "1"';
-                                } else {
-                                    $where = 'data_vencimento BETWEEN "' . $semana[0] . '" AND "' . $semana[1] . '" AND baixado = "0"';
-                                }
-                            }
-                        }
-                    }
-                } // fim lançamentos dia
-                else {
-
-                    // busca lançamento do mês
-
-                    if ($periodo == 'mes') {
-                        $mes = $this->getThisMonth();
-
-                        if (!isset($situacao) || $situacao == 'todos') {
-                            $where = 'data_vencimento BETWEEN "' . $mes[0] . '" AND "' . $mes[1] . '"';
-                        } else {
-                            if ($situacao == 'previsto') {
-                                $where = 'data_vencimento BETWEEN "' . date('Y-m-d') . '" AND "' . $mes[1] . '" AND baixado = "0"';
-                            } else {
-                                if ($situacao == 'atrasado') {
-                                    $where = 'data_vencimento BETWEEN "' . $mes[0] . '" AND "' . date('Y-m-d') . '" AND baixado = "0"';
-                                } else {
-                                    if ($situacao == 'realizado') {
-                                        $where = 'data_vencimento BETWEEN "' . $mes[0] . '" AND "' . $mes[1] . '" AND baixado = "1"';
-                                    } else {
-                                        $where = 'data_vencimento BETWEEN "' . $mes[0] . '" AND "' . $mes[1] . '" AND baixado = "0"';
-                                    }
-                                }
-                            }
-                        }
-                    } // busca lançamentos do ano
-                    else {
-                        $ano = $this->getThisYear();
-
-                        if (!isset($situacao) || $situacao == 'todos') {
-                            $where = 'data_vencimento BETWEEN "' . $ano[0] . '" AND "' . $ano[1] . '"';
-                        } else {
-                            if ($situacao == 'previsto') {
-                                $where = 'data_vencimento BETWEEN "' . date('Y-m-d') . '" AND "' . $ano[1] . '" AND baixado = "0"';
-                            } else {
-                                if ($situacao == 'atrasado') {
-                                    $where = 'data_vencimento BETWEEN "' . $ano[0] . '" AND "' . date('Y-m-d') . '" AND baixado = "0"';
-                                } else {
-                                    if ($situacao == 'realizado') {
-                                        $where = 'data_vencimento BETWEEN "' . $ano[0] . '" AND "' . $ano[1] . '" AND baixado = "1"';
-                                    } else {
-                                        $where = 'data_vencimento BETWEEN "' . $ano[0] . '" AND "' . $ano[1] . '" AND baixado = "0"';
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
+       
 
         $this->load->library('pagination');
 
@@ -140,8 +43,8 @@ class Financeiro extends MY_Controller
 
         $this->pagination->initialize($this->data['configuration']);
 
-        $this->data['results'] = $this->financeiro_model->get('lancamentos', '*', $where, $this->data['configuration']['per_page'], $this->input->get('per_page'));
-        $this->data['totals'] = $this->financeiro_model->getTotals($where);
+        $this->data['table_lancamentos'] = $this->get_table();
+        $this->data['totals'] = $this->financeiro_model->getTotals('');
 
         $this->data['view'] = 'financeiro/lancamentos';
         return $this->layout();
@@ -160,23 +63,14 @@ class Financeiro extends MY_Controller
         if ($this->form_validation->run('receita') == false) {
             $this->data['custom_error'] = (validation_errors() ? '<div class="form_error">' . validation_errors() . '</div>' : false);
         } else {
-            $vencimento = $this->input->post('vencimento');
             $recebimento = $this->input->post('recebimento');
 
-            if ($recebimento != null) {
+            try {
+                $recebimento = explode('/', $recebimento);
                 $recebimento = explode('/', $recebimento);
                 $recebimento = $recebimento[2] . '-' . $recebimento[1] . '-' . $recebimento[0];
-            }
-
-            if ($vencimento == null) {
-                $vencimento = date('d/m/Y');
-            }
-
-            try {
-                $vencimento = explode('/', $vencimento);
-                $vencimento = $vencimento[2] . '-' . $vencimento[1] . '-' . $vencimento[0];
             } catch (Exception $e) {
-                $vencimento = date('Y/m/d');
+                $recebimento = date('Y-m-d');
             }
 
             $valor = $this->input->post('valor');
@@ -188,12 +82,14 @@ class Financeiro extends MY_Controller
             $data = [
                 'descricao' => set_value('descricao'),
                 'valor' => $valor,
-                'data_vencimento' => $vencimento,
-                'data_pagamento' => $recebimento != null ? $recebimento : date('Y-m-d'),
-                'baixado' => $this->input->post('recebido') ?: 0,
-                'cliente_fornecedor' => set_value('cliente'),
+                'data_vencimento' => $recebimento,
+                'data_pagamento' => $recebimento,
+                'baixado' => 1,
+                'cliente_fornecedor' => 'Monteirinho',
                 'forma_pgto' => $this->input->post('formaPgto'),
                 'tipo' => set_value('tipo'),
+                'dataCadastro' => date('Y-m-d H:i:s'),
+                'cadastradoPor' => $this->session->userdata('id')
             ];
 
             if ($this->financeiro_model->add('lancamentos', $data) == true) {
@@ -222,23 +118,13 @@ class Financeiro extends MY_Controller
         if ($this->form_validation->run('despesa') == false) {
             $this->data['custom_error'] = (validation_errors() ? '<div class="form_error">' . validation_errors() . '</div>' : false);
         } else {
-            $vencimento = $this->input->post('vencimento');
-            $pagamento = $this->input->post('pagamento');
-
-            if ($pagamento != null) {
-                $pagamento = explode('/', $pagamento);
-                $pagamento = $pagamento[2] . '-' . $pagamento[1] . '-' . $pagamento[0];
-            }
-
-            if ($vencimento == null) {
-                $vencimento = date('d/m/Y');
-            }
+            $recebimento = $this->input->post('recebimento');
 
             try {
-                $vencimento = explode('/', $vencimento);
-                $vencimento = $vencimento[2] . '-' . $vencimento[1] . '-' . $vencimento[0];
+                $recebimento = explode('/', $recebimento);
+                $recebimento = $recebimento[2] . '-' . $recebimento[1] . '-' . $recebimento[0];
             } catch (Exception $e) {
-                $vencimento = date('Y/m/d');
+                $recebimento = date('Y-m-d');
             }
 
             $valor = $this->input->post('valor');
@@ -250,12 +136,14 @@ class Financeiro extends MY_Controller
             $data = [
                 'descricao' => set_value('descricao'),
                 'valor' => $valor,
-                'data_vencimento' => $vencimento,
-                'data_pagamento' => $pagamento != null ? $pagamento : date('Y-m-d'),
-                'baixado' => $this->input->post('pago') ?: 0,
-                'cliente_fornecedor' => set_value('fornecedor'),
+                'data_vencimento' => $recebimento,
+                'data_pagamento' => $recebimento,
+                'baixado' => 1,
+                'cliente_fornecedor' => set_value('fornecedor') != '' ? set_value('fornecedor') : 'Monteirinho',
                 'forma_pgto' => $this->input->post('formaPgto'),
                 'tipo' => set_value('tipo'),
+                'dataCadastro' => date('Y-m-d H:i:s'),
+                'cadastradoPor' => $this->session->userdata('id')
             ];
 
             if ($this->financeiro_model->add('lancamentos', $data) == true) {
@@ -314,6 +202,8 @@ class Financeiro extends MY_Controller
                 'cliente_fornecedor' => $this->input->post('fornecedor'),
                 'forma_pgto' => $this->input->post('formaPgto'),
                 'tipo' => $this->input->post('tipo'),
+                'dataAtualizacao' => date('Y-m-d H:i:s'),
+                'atualizadoPor' => $this->session->userdata('id')
             ];
 
             if ($this->financeiro_model->edit('lancamentos', $data, 'idLancamentos', $this->input->post('id')) == true) {
@@ -394,5 +284,82 @@ class Financeiro extends MY_Controller
 
         $ate = $ano . "-" . $mes . "-" . $qtdDiasMes;
         return [$inicia, $ate];
+    }
+    
+    public function get_table() {
+        $condition = [];
+        if($this->session->userdata('permissao') == 2) {
+            $condition['lancamentos.cadastradoPor'] = $this->session->userdata('id');
+        }
+        else if($this->input->get('loja') != 0) {
+            $condition['lancamentos.cadastradoPor'] = $this->input->get('loja');
+        }
+
+        if($this->input->get('data_inicio')) {
+            $dataInicio = explode('/',$this->input->get('data_inicio'));
+            $condition['lancamentos.data_pagamento >='] = count($dataInicio) == 3 ? $dataInicio[2].'-'.$dataInicio[1].'-'.$dataInicio[0] : date('Y-m-d');
+            $this->data['data_inicio'] = $this->input->get('data_inicio');
+        }
+
+        if($this->input->get('data_fim')) {
+            $dataFim = explode('/',$this->input->get('data_fim'));
+            $condition['lancamentos.data_pagamento <='] = count($dataFim) == 3 ? $dataFim[2].'-'.$dataFim[1].'-'.$dataFim[0] : date('Y-m-d');
+            $this->data['data_fim'] = $this->input->get('data_fim');
+        }
+
+        if($this->input->get('data_inicio') == '' && $this->input->get('data_fim') == '') {
+            $condition['lancamentos.data_pagamento'] = date('Y-m-d');
+        }
+
+        $lancamentos = $this->financeiro_model->get('lancamentos', 'lancamentos.*, usuarios.nome as loja', $condition, 100, 0);
+        $receitas = 0;
+        $despesas = 0;
+        foreach ($lancamentos as $lancamento) {
+                        
+            $actions = [];
+            if ($this->permission->checkPermission($this->session->userdata('permissao'), 'dLancamento')) {
+                $actions[] = '<a href="#modalExcluir" data-toggle="modal" role="button" idLancamento="' . $lancamento->idLancamentos . '" class="btn btn-danger tip-top excluir" title="Excluir Lançamento"><i class="fas fa-trash-alt"></i></a>';
+            }
+            
+            $label_tipo = $lancamento->tipo == 'receita' ? 'success' : 'important';
+
+            if($lancamento->tipo == 'receita') {
+                $receitas += $lancamento->valor;
+            }
+            else {
+                $despesas += $lancamento->valor;
+            }
+
+            $this->table->add_row([
+                ['data' => $lancamento->idLancamentos, 'style' => 'text-align: center'],
+                '<span style="text-align: center" class="label label-' . $label_tipo . '">' . ucfirst($lancamento->tipo) . '</span>',
+                $lancamento->cliente_fornecedor,
+                $lancamento->descricao,
+                $lancamento->forma_pgto,
+                ['data' => date(('d/m/Y'), strtotime($lancamento->data_pagamento)), 'style' => 'text-align: center'],
+                ['data' => $lancamento->loja, 'style' => 'text-align: center'],
+                ['data' => 'R$ ' . number_format($lancamento->valor, 2, ',', '.'), 'style' => 'text-align: right'],
+                ['data' => implode(' ',$actions), 'style' => 'text-align: center']
+            ]);
+
+        }
+        
+        $this->table->set_template([
+            'table_open' => '<table class="table table-bordered" id="divLancamentos">',
+            'table_close' => '<tr>
+                <td colspan="7" style="text-align: right; color: green"> <strong>Total Receitas:</strong></td>
+                <td colspan="3" style="text-align: left; color: green"><strong>R$ '.number_format($receitas, 2, ',', '.').'</strong></td>
+                </tr>
+                <tr>
+            <td colspan="7" style="text-align: right; color: red"> <strong>Total Despesas:</strong></td>
+            <td colspan="3" style="text-align: left; color: red"><strong>R$ '.number_format($despesas, 2, ',', '.').'</strong></td>
+          </tr>
+          <tr>
+            <td colspan="7" style="text-align: right"> <strong>Saldo:</strong></td>
+            <td colspan="3" style="text-align: left;"><strong>R$ '.number_format($receitas-$despesas, 2, ',', '.').'</strong></td>
+          </tr></table>'
+        ]);
+        $this->table->set_heading('#','Tipo', 'Cliente','Descrição','Forma Pag.','Data','Loja','Valor','Ações');
+        return $this->table->generate();
     }
 }

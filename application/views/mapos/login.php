@@ -62,13 +62,13 @@ defined('BASEPATH') OR exit('No direct script access allowed'); //Loading url he
   <div class="limiter">
     <div class="container-login100">
       <div class="wrap-login100">
-        <form class="login100-form validate-form" id="formLogin"">
+        <form class="login100-form validate-form" id="formLogin">
         <span class="login100-form-title p-b-43">
-          <img style="max-width: 250px" src="<?= base_url() ?>assets/img/logo.png" />
+          <img style="max-width: 190px;" src="<?= base_url() ?>assets/img/logo.png" />
         </span>
 
         <div id="message" style="display:none" class="alert alert-danger"></div>
-        <div class="wrap-input100 validate-input" data-validate="E-mail obrigatório">
+        <div class="wrap-input100 validate-input" data-validate="Usuário obrigatório">
           <input class="input100" id="email" type="text" name="email">
           <span class="focus-input100"></span>
           <span class="label-input100">Usuário</span>

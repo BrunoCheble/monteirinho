@@ -618,3 +618,21 @@ input.input100 {
   background: #333333;
   color: #fff;
 }
+
+
+@media (max-width: 1366px) {
+	.login100-form {
+		padding: 55px 55px 55px 55px;
+	}
+}
+.ui-pnotify-container {
+  background: #fff;
+}
+.ui-pnotify-text p{
+  margin: 0;
+  font-size: .9em;
+}
+
+.ui-pnotify-text br {
+  display:none
+}

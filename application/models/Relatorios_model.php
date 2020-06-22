@@ -266,4 +266,13 @@ class Relatorios_model extends CI_Model
 
         return $this->db->query($query)->result();
     }
+    
+    public function produtosEstoque()
+    {
+        $this->db->where('estoque > 0');
+        $this->db->order_by('descricao', 'asc');
+
+        return $this->db->get('produtos')->result();
+    }
+
 }

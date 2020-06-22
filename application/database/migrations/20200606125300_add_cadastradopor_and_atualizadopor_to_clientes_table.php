@@ -22,7 +22,7 @@ class Migration_add_cadastradopor_and_atualizadopor_to_clientes_table extends CI
 
     public function down()
     {
-        $this->dbforge->drop_column('clientes', 'contato');
-        $this->dbforge->drop_column('clientes', 'complemento');
+        $this->dbforge->drop_column('clientes', 'cadastradoPor');
+        $this->dbforge->drop_column('clientes', 'atualizadoPor');
     }
 }

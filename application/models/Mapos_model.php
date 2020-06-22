@@ -268,4 +268,11 @@ class Mapos_model extends CI_Model
         }
         return true;
     }
+
+    
+    public function getEmitenteById($id)
+    {
+        return $this->db->where('id',$id)->get('emitente')->row();
+    }
+
 }

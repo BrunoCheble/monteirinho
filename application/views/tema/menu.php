@@ -4,10 +4,22 @@
     <li class="<?php if (isset($menuPainel)) {
     echo 'active';
 }; ?>"><a href="<?= base_url() ?>"><i class="fas fa-home"></i> <span>Dashboard</span></a></li>
+    <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vAgendamento')) { ?>
+      <li class="<?php if (isset($menuAgendamentos)) {
+    echo 'active';
+}; ?>"><a href="<?= site_url('agendamentos') ?>"><i class="fas fa-calendar"></i> <span>Agendamentos</span></a></li>
+    <?php
+    } ?>
     <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vCliente')) { ?>
       <li class="<?php if (isset($menuClientes)) {
     echo 'active';
 }; ?>"><a href="<?= site_url('clientes') ?>"><i class="fas fa-users"></i> <span>Clientes</span></a></li>
+    <?php
+    } ?>
+    <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vFornecedor')) { ?>
+      <li class="<?php if (isset($menuFornecedores)) {
+    echo 'active';
+}; ?>"><a href="<?= site_url('fornecedores') ?>"><i class="fas fa-industry"></i> <span>Fornecedores</span></a></li>
     <?php
     } ?>
     <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vProduto')) { ?>
@@ -47,14 +59,9 @@
     <?php
     } ?>
     <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vLancamento')) { ?>
-      <li class="submenu <?php if (isset($menuFinanceiro)) {
-        echo 'active open';
-    }; ?>">
-        <a href="#"><i class="fas fa-hand-holding-usd"></i> <span>Financeiro</span> <span class="label"><i class="fas fa-chevron-down"></i></span></a>
-        <ul>
-          <li><a href="<?= site_url('financeiro/lancamentos') ?>">Lançamentos</a></li>
-        </ul>
-      </li>
+      <li class="<?php if (isset($menuFinanceiro)) {
+        echo 'active';
+    }; ?>"><a href="<?= site_url('financeiro/lancamentos') ?>"><i class="fas fa-hand-holding-usd"></i> <span>Lançamentos</span></a></li>
     <?php
     } ?>
     <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'rCliente') || $this->permission->checkPermission($this->session->userdata('permissao'), 'rProduto') || $this->permission->checkPermission($this->session->userdata('permissao'), 'rServico') || $this->permission->checkPermission($this->session->userdata('permissao'), 'rOs') || $this->permission->checkPermission($this->session->userdata('permissao'), 'rFinanceiro') || $this->permission->checkPermission($this->session->userdata('permissao'), 'rVenda')) { ?>

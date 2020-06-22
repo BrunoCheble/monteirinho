@@ -65,6 +65,16 @@ class Permissoes extends MY_Controller
                 'dCliente' => $this->input->post('dCliente'),
                 'vCliente' => $this->input->post('vCliente'),
 
+                'aFornecedor' => $this->input->post('aFornecedor'),
+                'eFornecedor' => $this->input->post('eFornecedor'),
+                'dFornecedor' => $this->input->post('dFornecedor'),
+                'vFornecedor' => $this->input->post('vFornecedor'),
+
+                'aAgendamento' => $this->input->post('aAgendamento'),
+                'eAgendamento' => $this->input->post('eAgendamento'),
+                'dAgendamento' => $this->input->post('dAgendamento'),
+                'vAgendamento' => $this->input->post('vAgendamento'),
+
                 'aProduto' => $this->input->post('aProduto'),
                 'eProduto' => $this->input->post('eProduto'),
                 'dProduto' => $this->input->post('dProduto'),
@@ -160,6 +170,16 @@ class Permissoes extends MY_Controller
                 'eCliente' => $this->input->post('eCliente'),
                 'dCliente' => $this->input->post('dCliente'),
                 'vCliente' => $this->input->post('vCliente'),
+
+                'aFornecedor' => $this->input->post('aFornecedor'),
+                'eFornecedor' => $this->input->post('eFornecedor'),
+                'dFornecedor' => $this->input->post('dFornecedor'),
+                'vFornecedor' => $this->input->post('vFornecedor'),
+
+                'aAgendamento' => $this->input->post('aAgendamento'),
+                'eAgendamento' => $this->input->post('eAgendamento'),
+                'dAgendamento' => $this->input->post('dAgendamento'),
+                'vAgendamento' => $this->input->post('vAgendamento'),
 
                 'aProduto' => $this->input->post('aProduto'),
                 'eProduto' => $this->input->post('eProduto'),

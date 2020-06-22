@@ -11,51 +11,9 @@
     </div>
 
     <div class="widget-content nopadding">
-        <table class="table table-bordered ">
-            <thead>
-                <tr>
-                    <th>Cod.</th>
-                    <th>Nome</th>
-                    <th>CPF/CNPJ</th>
-                    <th>Telefone</th>
-                    <th>Email</th>
-                    <th>Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php
-                    
-                    if (!$results) {
-                        echo '<tr>
-                                <td colspan="5">Nenhum Cliente Cadastrado</td>
-                                </tr>';
-                    }
-                    foreach ($results as $r) {
-                        echo '<tr>';
-                        echo '<td>' . $r->idClientes . '</td>';
-                        echo '<td>' . $r->nomeCliente . '</td>';
-                        echo '<td>' . $r->documento . '</td>';
-                        echo '<td>' . $r->telefone . '</td>';
-                        echo '<td>' . $r->email . '</td>';
-                        echo '<td>';
-                        if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vCliente')) {
-                            echo '<a href="' . base_url() . 'index.php/clientes/visualizar/' . $r->idClientes . '" style="margin-right: 1%" class="btn tip-top" title="Ver mais detalhes"><i class="fas fa-eye"></i></a>';
-                        }
-                        if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eCliente')) {
-                            echo '<a href="' . base_url() . 'index.php/clientes/editar/' . $r->idClientes . '" style="margin-right: 1%" class="btn btn-info tip-top" title="Editar Cliente"><i class="fas fa-edit"></i></a>';
-                        }
-                        if ($this->permission->checkPermission($this->session->userdata('permissao'), 'dCliente')) {
-                            echo '<a href="#modal-excluir" role="button" data-toggle="modal" cliente="' . $r->idClientes . '" style="margin-right: 1%" class="btn btn-danger tip-top" title="Excluir Cliente"><i class="fas fa-trash-alt"></i></a>';
-                        }
-                        echo '</td>';
-                        echo '</tr>';
-                    } ?>
-          
-            </tbody>
-        </table>
+        <?= $table_clientes; ?>
     </div>
 </div>
-<?php echo $this->pagination->create_links(); ?>
 
 
 <!-- Modal -->
@@ -82,5 +40,33 @@
             var cliente = $(this).attr('cliente');
             $('#idCliente').val(cliente);
         });
+        
+        $('.table').DataTable({
+                language: {
+                    info: "Exibindo _START_ a _END_ de _TOTAL_ registos",
+                    zeroRecords: "Nenhum registos foi encontrado",
+                    lengthMenu: "Exibir _MENU_ registos por página",
+                    infoEmpty: "",
+                    infoFiltered: "(busca aplicada em _MAX_ registos)",
+                    search: "Buscar: ",
+                    paginate: {
+                        next: '&#8594;', // or '→'
+                        previous: '&#8592;' // or '←' 
+                    }
+                },
+                dom: "Blfrtip",
+                buttons: [
+                    {
+                        extend: "print",
+                        text: 'Imprimir Relatório',
+                        exportOptions: {
+                            columns: [ 0, 1, 2, 3, 4, 5 ]
+                        },
+                        customize: function(win) {
+                            $(win.document.body).find('h1').text('Clientes');
+                        }
+                    },
+                ]
+            });
     });
 </script>

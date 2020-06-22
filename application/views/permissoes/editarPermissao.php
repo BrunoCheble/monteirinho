@@ -98,8 +98,100 @@
                                     </td>
                                  
                                 </tr>
-
+                                
                                 <tr><td colspan="4"></td></tr>
+                        <tr>
+                            <td>
+                                <label>
+                                    <input <?php if (isset($permissoes['vFornecedor'])) {
+                            if ($permissoes['vFornecedor'] == '1') {
+                            echo 'checked';
+                            }
+                            }?> name="vFornecedor" class="marcar" type="checkbox" value="1" />
+                                    <span class="lbl"> Visualizar Fornecedor</span>
+                                </label>
+                            </td>
+
+                            <td>
+                                <label>
+                                    <input <?php if (isset($permissoes['aFornecedor'])) {
+                            if ($permissoes['aFornecedor'] == '1') {
+                            echo 'checked';
+                            }
+                            }?> name="aFornecedor" class="marcar" type="checkbox" value="1" />
+                                    <span class="lbl"> Adicionar Fornecedor</span>
+                                </label>
+                            </td>
+
+                            <td>
+                                <label>
+                                    <input <?php if (isset($permissoes['eFornecedor'])) {
+                            if ($permissoes['eFornecedor'] == '1') {
+                            echo 'checked';
+                            }
+                            }?> name="eFornecedor" class="marcar" type="checkbox" value="1" />
+                                    <span class="lbl"> Editar Fornecedor</span>
+                                </label>
+                            </td>
+                            <td>
+                                <label>
+                                    <input <?php if (isset($permissoes['dFornecedor'])) {
+                            if ($permissoes['dFornecedor'] == '1') {
+                            echo 'checked';
+                            }
+                            }?> name="dFornecedor" class="marcar" type="checkbox" value="1" />
+                                    <span class="lbl"> Excluir Fornecedor</span>
+                                </label>
+                            </td>
+                        </tr>
+                                <tr><td colspan="4"></td></tr>
+
+                        <tr>
+                            <td>
+                                <label>
+                                    <input <?php if (isset($permissoes['vAgendamento'])) {
+                            if ($permissoes['vAgendamento'] == '1') {
+                            echo 'checked';
+                            }
+                            }?> name="vAgendamento" class="marcar" type="checkbox" value="1" />
+                                    <span class="lbl"> Visualizar Agendamento</span>
+                                </label>
+                            </td>
+
+                            <td>
+                                <label>
+                                    <input <?php if (isset($permissoes['aAgendamento'])) {
+                            if ($permissoes['aAgendamento'] == '1') {
+                            echo 'checked';
+                            }
+                            }?> name="aAgendamento" class="marcar" type="checkbox" value="1" />
+                                    <span class="lbl"> Adicionar Agendamento</span>
+                                </label>
+                            </td>
+
+                            <td>
+                                <label>
+                                    <input <?php if (isset($permissoes['eAgendamento'])) {
+                            if ($permissoes['eAgendamento'] == '1') {
+                            echo 'checked';
+                            }
+                            }?> name="eAgendamento" class="marcar" type="checkbox" value="1" />
+                                    <span class="lbl"> Editar Agendamento</span>
+                                </label>
+                            </td>
+                            <td>
+                                <label>
+                                    <input <?php if (isset($permissoes['dAgendamento'])) {
+                            if ($permissoes['dAgendamento'] == '1') {
+                            echo 'checked';
+                            }
+                            }?> name="dAgendamento" class="marcar" type="checkbox" value="1" />
+                                    <span class="lbl"> Excluir Agendamento</span>
+                                </label>
+                            </td>
+                        </tr>
+                                <tr><td colspan="4"></td></tr>
+
                                 <tr>
 
                                     <td>

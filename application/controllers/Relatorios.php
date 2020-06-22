@@ -367,4 +367,12 @@ class Relatorios extends MY_Controller
         $html = $this->load->view('relatorios/imprimir/imprimirVendas', $data, true);
         pdf_create($html, 'relatorio_vendas' . date('d/m/y'), true);
     }
+    
+    public function produtosEstoque()
+    {
+        $data['produtos'] = $this->Relatorios_model->produtosEstoque();
+        $this->load->helper('mpdf');
+        $html = $this->load->view('relatorios/imprimir/imprimirEstoque', $data, true);
+        pdf_create($html, 'estoque_' . date('d/m/Y H:i:s'), true);
+    }
 }

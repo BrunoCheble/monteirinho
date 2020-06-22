@@ -63,7 +63,74 @@
                                         </td>
 
                                     </tr>
+                                    
+                                    <tr>
+                                        <td colspan="4"></td>
+                                    </tr>
 
+                                    <tr>
+
+                                        <td>
+                                            <label>
+                                                <input name="vAgendamento" class="marcar" type="checkbox" checked="checked" value="1" />
+                                                <span class="lbl"> Visualizar Agendamento</span>
+                                            </label>
+                                        </td>
+
+                                        <td>
+                                            <label>
+                                                <input name="aAgendamento" class="marcar" type="checkbox" value="1" />
+                                                <span class="lbl"> Adicionar Agendamento</span>
+                                            </label>
+                                        </td>
+
+                                        <td>
+                                            <label>
+                                                <input name="eAgendamento" class="marcar" type="checkbox" value="1" />
+                                                <span class="lbl"> Editar Agendamento</span>
+                                            </label>
+                                        </td>
+                                        <td>
+                                            <label>
+                                                <input name="dAgendamento" class="marcar" type="checkbox" value="1" />
+                                                <span class="lbl"> Excluir Agendamento</span>
+                                            </label>
+                                        </td>
+
+                                    </tr>
+                                    
+                                    <tr>
+                                        <td colspan="4"></td>
+                                    </tr>
+                                    
+                                    <tr>
+                                        <td>
+                                            <label>
+                                                <input name="vFornecedor" class="marcar" type="checkbox" checked="checked" value="1" />
+                                                <span class="lbl"> Visualizar Fornecedor</span>
+                                            </label>
+                                        </td>
+
+                                        <td>
+                                            <label>
+                                                <input name="aFornecedor" class="marcar" type="checkbox" value="1" />
+                                                <span class="lbl"> Adicionar Fornecedor</span>
+                                            </label>
+                                        </td>
+
+                                        <td>
+                                            <label>
+                                                <input name="eFornecedor" class="marcar" type="checkbox" value="1" />
+                                                <span class="lbl"> Editar Fornecedor</span>
+                                            </label>
+                                        </td>
+                                        <td>
+                                            <label>
+                                                <input name="dFornecedor" class="marcar" type="checkbox" value="1" />
+                                                <span class="lbl"> Excluir Fornecedor</span>
+                                            </label>
+                                        </td>
+                                    </tr>
                                     <tr>
                                         <td colspan="4"></td>
                                     </tr>

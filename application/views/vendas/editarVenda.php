@@ -2,7 +2,6 @@
 <script type="text/javascript" src="<?php echo base_url() ?>assets/js/jquery-ui/js/jquery-ui-1.9.2.custom.js"></script>
 <script src="<?php echo base_url() ?>assets/js/sweetalert2.all.min.js"></script>
 
-
 <div class="row-fluid" style="margin-top:0">
     <div class="span12">
         <div class="widget-box">
@@ -22,41 +21,38 @@
                             <div class="span12" id="divEditarVenda">
                                 <form action="<?php echo current_url(); ?>" method="post" id="formVendas">
                                     <?php echo form_hidden('idVendas', $result->idVendas) ?>
+                                    <?php echo form_hidden('usuarios_id', $result->usuarios_id) ?>
+                                    
                                     <div class="span12" style="padding: 1%; margin-left: 0">
-                                        <h3>#Venda:
+                                        <h3 style="text-align:center; margin:0;">Nº da Venda:
                                             <?php echo $result->idVendas ?>
                                         </h3>
                                         <div class="span2" style="margin-left: 0">
-                                            <label for="dataFinal">Data Final</label>
-                                            <input id="dataVenda" class="span12 datepicker" type="text" name="dataVenda" value="<?php echo date('d/m/Y', strtotime($result->dataVenda)); ?>" />
+                                            <label for="dataFinal">Data Venda</label>
+                                            <input id="dataVenda" class="span12 datepicker" <?= $result->faturado ? 'disabled': '' ?> type="text" name="dataVenda" value="<?php echo date('d/m/Y', strtotime($result->dataVenda)); ?>" />
                                         </div>
                                         <div class="span5">
                                             <label for="cliente">Cliente<span class="required">*</span></label>
-                                            <input id="cliente" class="span12" type="text" name="cliente" value="<?php echo $result->nomeCliente ?>" />
+                                            <input id="cliente" class="span12" <?= $result->faturado ? 'disabled': '' ?> type="text" name="cliente" value="<?php echo $result->nomeCliente ?>" />
                                             <input id="clientes_id" class="span12" type="hidden" name="clientes_id" value="<?php echo $result->clientes_id ?>" />
                                             <input id="valorTotal" type="hidden" name="valorTotal" value="" />
                                         </div>
-                                        <div class="span5">
-                                            <label for="tecnico">Vendedor<span class="required">*</span></label>
-                                            <input id="tecnico" class="span12" type="text" name="tecnico" value="<?php echo $result->nome ?>" />
-                                            <input id="usuarios_id" class="span12" type="hidden" name="usuarios_id" value="<?php echo $result->usuarios_id ?>" />
-                                        </div>
-                                    </div>
-                                    <div class="span12" style="padding: 1%; margin-left: 0">
-                                        <div class="span8 offset2" style="text-align: center">
-                                            <?php if ($result->faturado == 0) { ?>
-                                                <a href="#modal-faturar" id="btn-faturar" role="button" data-toggle="modal" class="btn btn-success"><i class="fas fa-cash-register"></i> Faturar</a>
+                                        <div class="span5" style="text-align: right;">
+                                            <?php if ($result->faturado == 0) : ?>
+                                                <a href="#modal-faturar" id="btn-faturar" role="button" data-toggle="modal" class="btn btn-success"><i class="fas fa-cash-register"></i><br>Faturar</a>
                                             <?php
-                                            } ?>
-                                            <button class="btn btn-primary" id="btnContinuar"><i class="fas fa-sync-alt"></i> Atualizar</button>
-                                            <a href="<?php echo base_url() ?>index.php/vendas/visualizar/<?php echo $result->idVendas; ?>" class="btn btn-inverse"><i class="fas fa-eye"></i> Visualizar Venda</a>
-                                            <a href="<?php echo base_url() ?>index.php/vendas" class="btn"><i class="fas fa-backward"></i> Voltar</a>
+                                            else : ?>
+                                                <button disabled class="btn btn-success"><i class="fas fa-cash-register"></i><br>Faturado</button>
+                                            <?php endif; ?>
+                                            <button class="btn btn-primary" id="btnContinuar"><i class="fas fa-sync-alt"></i><br>Atualizar</button>
+                                            <a href="<?php echo base_url() ?>index.php/vendas" class="btn"><i class="fas fa-backward"></i><br>Voltar</a>
                                         </div>
                                     </div>
                                 </form>
+                                <?php if ($result->faturado == 0): ?>
                                 <div class="span12 well" style="padding: 1%; margin-left: 0">
                                     <form id="formProdutos" action="<?php echo base_url(); ?>index.php/vendas/adicionarProduto" method="post">
-                                        <div class="span6">
+                                        <div class="span4">
                                             <input type="hidden" name="idProduto" id="idProduto" />
                                             <input type="hidden" name="idVendasProduto" id="idVendasProduto" value="<?php echo $result->idVendas ?>" />
                                             <input type="hidden" name="estoque" id="estoque" value="" />
@@ -68,6 +64,15 @@
                                             <input type="text" placeholder="Preço" id="preco" name="preco" class="span12 money" />
                                         </div>
                                         <div class="span2">
+                                            <label for="">Desconto</label>
+                                            <select class="span12" name="desconto" id="desconto">
+                                                <option>0%</option>
+                                                <option value="5">5%</option>
+                                                <option value="10">10%</option>
+                                                <option value="15">15%</option>
+                                            </select>
+                                        </div>
+                                        <div class="span2">
                                             <label for="">Quantidade</label>
                                             <input type="text" placeholder="Quantidade" id="quantidade" name="quantidade" class="span12" />
                                         </div>
@@ -77,6 +82,7 @@
                                         </div>
                                     </form>
                                 </div>
+                                <?php endif; ?>
                                 <div class="span12" id="divProdutos" style="margin-left: 0">
                                     <table class="table table-bordered" id="tblProdutos">
                                         <thead>
@@ -84,7 +90,8 @@
                                                 <th>Produto</th>
                                                 <th>Quantidade</th>
                                                 <th>Preço</th>
-                                                <th>Ações</th>
+                                                <th>Desconto %</th>
+                                                <?= $result->faturado == 0 ? '<th>Ações</th>' : '' ?>
                                                 <th>Sub-total</th>
                                             </tr>
                                         </thead>
@@ -96,19 +103,30 @@
                                                 $total = $total + $p->subTotal;
                                                 echo '<tr>';
                                                 echo '<td>' . $p->descricao . '</td>';
-                                                echo '<td>' . $p->quantidade . '</td>';
+                                                echo '<td style="text-align: center">' . $p->quantidade . '</td>';
                                                 echo '<td>' . $preco . '</td>';
-                                                echo '<td><a href="" idAcao="' . $p->idItens . '" prodAcao="' . $p->idProdutos . '" quantAcao="' . $p->quantidade . '" title="Excluir Produto" class="btn btn-danger"><i class="fas fa-trash-alt"></i></a></td>';
+                                                echo '<td style="text-align: center">' . ($p->desconto > 0 ? $p->desconto.'%' : '') . '</td>';
+                                                echo $result->faturado == 0 ? '<td style="text-align: center"><a href="" idAcao="' . $p->idItens . '" prodAcao="' . $p->idProdutos . '" quantAcao="' . $p->quantidade . '" title="Excluir Produto" class="btn btn-danger"><i class="fas fa-trash-alt"></i></a></td>' : '';
                                                 echo '<td>R$ ' . number_format($p->subTotal, 2, ',', '.') . '</td>';
                                                 echo '</tr>';
                                             } ?>
                                             <tr>
-                                                <td colspan="4" style="text-align: right"><strong>Total:</strong></td>
+                                                <td colspan="<?= $result->faturado == 0 ? 5 : 4?>" style="text-align: right"><strong>Total:</strong></td>
                                                 <td><strong>R$
                                                         <?php echo number_format($total, 2, ',', '.'); ?></strong> <input type="hidden" id="total-venda" value="<?php echo number_format($total, 2); ?>"></td>
                                             </tr>
                                         </tbody>
                                     </table>
+                                </div>
+                                <div style="padding: 1%; margin-left: 0">
+                                    <div class="span2">
+                                        <label for="dataFinal">Data Entrega</label>
+                                        <input id="dataVenda" class="span12 datepicker" type="text" name="dataVenda" value="<?php echo date('d/m/Y', strtotime($result->dataVenda)); ?>" />
+                                    </div>
+                                    <div class="span10">
+                                        <label for="observacao">Obrservação do Pedido</label>
+                                        <textarea name="observacao" class="span12"></textarea>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -148,20 +166,14 @@
                     <input class="span12 money" id="valor" type="text" name="valor" value="<?php echo number_format($total, 2); ?> " />
                 </div>
                 <div class="span4">
+                    <label for="recebimento">Data Recebimento</label>
+                    <input class="span12 datepicker" value="<?php echo date('d/m/Y', strtotime($result->dataVenda)); ?>" autocomplete="off" id="recebimento" type="text" name="recebimento" />
+                </div>
+                <div class="span4" style="display:none">
                     <label for="vencimento">Data Vencimento*</label>
-                    <input class="span12 datepicker" autocomplete="off" id="vencimento" type="text" name="vencimento" />
+                    <input class="span12 datepicker" value="<?php echo date('d/m/Y', strtotime($result->dataVenda)); ?>" autocomplete="off" id="vencimento" type="text" name="vencimento" />
                 </div>
-            </div>
-            <div class="span12" style="margin-left: 0">
-                <div class="span4" style="margin-left: 0">
-                    <label for="recebido">Recebido?</label>
-                    &nbsp &nbsp &nbsp &nbsp<input id="recebido" type="checkbox" name="recebido" value="1" />
-                </div>
-                <div id="divRecebimento" class="span8" style=" display: none">
-                    <div class="span6">
-                        <label for="recebimento">Data Recebimento</label>
-                        <input class="span12 datepicker" autocomplete="off" id="recebimento" type="text" name="recebimento" />
-                    </div>
+                <div id="divRecebimento" class="span4">
                     <div class="span6">
                         <label for="formaPgto">Forma Pgto</label>
                         <select name="formaPgto" id="formaPgto" class="span12">
@@ -174,6 +186,13 @@
                         </select>
                     </div>
                 </div>
+            </div>
+            <div class="span12" style="margin-left: 0">
+                <div class="span4" style="margin-left: 0">
+                    <label for="recebido">Recebido?</label>
+                    &nbsp &nbsp &nbsp &nbsp<input id="recebido" checked type="checkbox" name="recebido" value="1" />
+                </div>
+                
             </div>
         </div>
         <div class="modal-footer">
@@ -245,7 +264,7 @@
                             Swal.fire({
                                 type: "error",
                                 title: "Atenção",
-                                text: "Ocorreu um erro ao tentar faturar venda."
+                                text: data.message
                             });
                             $('#progress-fatura').hide();
                         }

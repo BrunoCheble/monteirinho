@@ -1,6 +1,11 @@
+<link rel="stylesheet" href="<?php echo base_url(); ?>assets/js/jquery-ui/css/smoothness/jquery-ui-1.9.2.custom.css" />
+<script type="text/javascript" src="<?php echo base_url() ?>assets/js/jquery-ui/js/jquery-ui-1.9.2.custom.js"></script>
+
 <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'aVenda')) { ?>
     <a href="<?php echo base_url(); ?>index.php/vendas/adicionar" class="btn btn-success"><i class="fas fa-plus"></i> Adicionar Venda</a>
 <?php } ?>
+
+<a href="#modalFiltro" data-toggle="modal" role="button" style="margin-right:3px" class="btn btn-primary tip-bottom pull-right" title="Filtrar lançamentos"><i class="fas fa-filter"></i> Filtrar</a>
 
 <div class="widget-box">
     <div class="widget-title">
@@ -10,58 +15,47 @@
         <h5>Vendas</h5>
     </div>
     <div class="widget-content nopadding">
-        <table class="table table-bordered ">
-            <thead>
-                <tr style="background-color: #2D335B">
-                    <th>#</th>
-                    <th>Data da Venda</th>
-                    <th>Cliente</th>
-                    <th>Faturado</th>
-                    <th>Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php
-                
-                    if (!$results) {
-                        echo '<tr>
-                                <td colspan="5">Nenhuma Venda Cadastrada</td>
-                            </tr>';
-                    }
-                    foreach ($results as $r) {
-                        $dataVenda = date(('d/m/Y'), strtotime($r->dataVenda));
-                        if ($r->faturado == 1) {
-                            $faturado = 'Sim';
-                        } else {
-                            $faturado = 'Não';
-                        }
-                        echo '<tr>';
-                        echo '<td>' . $r->idVendas . '</td>';
-                        echo '<td>' . $dataVenda . '</td>';
-                        echo '<td><a href="' . base_url() . 'index.php/clientes/visualizar/' . $r->idClientes . '">' . $r->nomeCliente . '</a></td>';
-                        echo '<td>' . $faturado . '</td>';
-                        echo '<td>';
-                        if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vVenda')) {
-                            echo '<a style="margin-right: 1%" href="' . base_url() . 'index.php/vendas/visualizar/' . $r->idVendas . '" class="btn tip-top" title="Ver mais detalhes"><i class="fas fa-eye"></i></a>';
-                            echo '<a style="margin-right: 1%" href="' . base_url() . 'index.php/vendas/imprimir/' . $r->idVendas . '" target="_blank" class="btn btn-inverse tip-top" title="Imprimir A4"><i class="fas fa-print"></i></a>';
-                            echo '<a style="margin-right: 1%" href="' . base_url() . 'index.php/vendas/imprimirTermica/' . $r->idVendas . '" target="_blank" class="btn btn-inverse tip-top" title="Imprimir Não Fiscal"><i class="fas fa-print"></i></a>';
-                        }
-                        if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eVenda')) {
-                            echo '<a style="margin-right: 1%" href="' . base_url() . 'index.php/vendas/editar/' . $r->idVendas . '" class="btn btn-info tip-top" title="Editar venda"><i class="fas fa-edit"></i></a>';
-                        }
-                        if ($this->permission->checkPermission($this->session->userdata('permissao'), 'dVenda')) {
-                            echo '<a href="#modal-excluir" role="button" data-toggle="modal" venda="' . $r->idVendas . '" class="btn btn-danger tip-top" title="Excluir Venda"><i class="fas fa-trash-alt"></i></a>';
-                        }
-                        echo '</td>';
-                        echo '</tr>';
-                    } ?>
-                <tr>
-                </tr>
-            </tbody>
-        </table>
+        <?= $table_vendas; ?>
     </div>
 </div>
-<?php echo $this->pagination->create_links(); ?>
+
+<!-- Modal Filtro lançamento-->
+<div id="modalFiltro" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <form action="<?php echo current_url(); ?>" method="get">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+      <h3 id="myModalLabel">Filtrar Vendas</h3>
+    </div>
+    <div class="modal-body">
+      <div class="row-fluid">
+        <div class="span6">
+          <label><i class="fas fa-calendar-day tip-top" title="Data início"></i> Data Início</label>
+          <input class="span12 datepicker" name="data_inicio" value="<?= $data_inicio; ?>" type="text">
+        </div>
+        <div class="span6">
+          <label><i class="fas fa-calendar-day tip-top" title="Data fim"></i> Data Fim</label>
+          <input class="span12 datepicker" name="data_fim" value="<?= $data_fim; ?>" type="text">
+        </div>
+      </div>
+        
+      <div class="row-fluid">
+        <div class="span6">
+          <label><i class="fas fa-store tip-top" title="Lançamentos com vencimento no período."></i> Loja</label>
+          <select name="loja" class="span12">
+            <option value="0">Todas</option>
+            <option value="2">Loja A</option>
+            <option value="3">Loja B</option>
+          </select>
+        </div>
+      </div>
+
+    </div>
+    <div class="modal-footer">
+      <button class="btn" data-dismiss="modal" aria-hidden="true" id="btnCancelarEditar">Cancelar</button>
+      <button type="submit" class="btn btn-primary"><i class="fas fa-filter"></i> Filtrar</button>
+    </div>
+  </form>
+</div>
 
 <!-- Modal -->
 <div id="modal-excluir" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -87,5 +81,37 @@
             var venda = $(this).attr('venda');
             $('#idVenda').val(venda);
         });
+
+        $('[name="loja"]').val('<?= $loja; ?>');
+        $(".datepicker").datepicker({
+            dateFormat: 'dd/mm/yy'
+        });
+        $('.table').DataTable({
+                language: {
+                    info: "Exibindo _START_ a _END_ de _TOTAL_ registos",
+                    zeroRecords: "Nenhum registos foi encontrado",
+                    lengthMenu: "Exibir _MENU_ registos por página",
+                    infoEmpty: "",
+                    infoFiltered: "(busca aplicada em _MAX_ registos)",
+                    search: "Buscar: ",
+                    paginate: {
+                        next: '&#8594;', // or '→'
+                        previous: '&#8592;' // or '←' 
+                    }
+                },
+                dom: "Blfrtip",
+                buttons: [
+                    {
+                        extend: "print",
+                        text: 'Imprimir Relatório',
+                        exportOptions: {
+                            columns: [ 0, 1, 2, 3, 4, 5 ]
+                        },
+                        customize: function(win) {
+                            $(win.document.body).find('h1').text('Clientes');
+                        }
+                    },
+                ]
+            });
     });
 </script>

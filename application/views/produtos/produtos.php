@@ -1,8 +1,9 @@
 <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'aProduto')) { ?>
     <a href="<?php echo base_url(); ?>index.php/produtos/adicionar" class="btn btn-success"><i class="fas fa-plus"></i> Adicionar Produto</a>
-    <a href="#modal-etiquetas" role="button" data-toggle="modal" class="btn btn-success span2" style="float: right;">
-        <i class="fas fa-barcode"></i> Gerar Etiquetas</a>
-
+    
+    <a href="<?php echo base_url(); ?>index.php/relatorios/produtosEstoque" target="_new" class="btn btn-primary span2" style="float: right;">
+        <i class="fas fa-print"></i> Imprimir Estoque</a>
+    
 <?php } ?>
 
 <div class="widget-box">
@@ -13,53 +14,9 @@
         <h5>Produtos</h5>
     </div>
     <div class="widget-content nopadding">
-        <table class="table table-bordered ">
-            <thead>
-            <tr style="backgroud-color: #2D335B">
-                <th>Cod. Produto</th>
-                <th>Código de Barra</th>
-                <th>Nome</th>
-                <th>Estoque</th>
-                <th>Preço</th>
-                <th>Ações</th>
-            </tr>
-            </thead>
-            <tbody>
-            <?php
-
-            if (!$results) {
-                echo '<tr>
-                                <td colspan="5">Nenhum Produto Cadastrado</td>
-                                </tr>';
-            }
-            foreach ($results as $r) {
-                echo '<tr>';
-                echo '<td>' . $r->idProdutos . '</td>';
-                echo '<td>' . $r->codDeBarra . '</td>';
-                echo '<td>' . $r->descricao . '</td>';
-                echo '<td>' . $r->estoque . '</td>';
-                echo '<td>' . number_format($r->precoVenda, 2, ',', '.') . '</td>';
-                echo '<td>';
-                if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vProduto')) {
-                    echo '<a style="margin-right: 1%" href="' . base_url() . 'index.php/produtos/visualizar/' . $r->idProdutos . '" class="btn tip-top" title="Visualizar Produto"><i class="fas fa-eye"></i></a>  ';
-                }
-                if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eProduto')) {
-                    echo '<a style="margin-right: 1%" href="' . base_url() . 'index.php/produtos/editar/' . $r->idProdutos . '" class="btn btn-info tip-top" title="Editar Produto"><i class="fas fa-edit"></i></a>';
-                }
-                if ($this->permission->checkPermission($this->session->userdata('permissao'), 'dProduto')) {
-                    echo '<a style="margin-right: 1%" href="#modal-excluir" role="button" data-toggle="modal" produto="' . $r->idProdutos . '" class="btn btn-danger tip-top" title="Excluir Produto"><i class="fas fa-trash-alt"></i></a>';
-                }
-                if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eProduto')) {
-                    echo '<a href="#atualizar-estoque" role="button" data-toggle="modal" produto="' . $r->idProdutos . '" estoque="' . $r->estoque . '" class="btn btn-primary tip-top" title="Atualizar Estoque"><i class="fas fa-plus-square"></i></a>';
-                }
-                echo '</td>';
-                echo '</tr>';
-            } ?>
-            </tbody>
-        </table>
+        <?= $table_produtos; ?>
     </div>
 </div>
-<?php echo $this->pagination->create_links(); ?>
 
 <!-- Modal -->
 <div id="modal-excluir" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -168,6 +125,20 @@
             $('#estoqueAtual').val(estoque);
         });
 
+        $('.table').DataTable({
+                language: {
+                    info: "Exibindo _START_ a _END_ de _TOTAL_ registos",
+                    zeroRecords: "Nenhum registos foi encontrado",
+                    lengthMenu: "Exibir _MENU_ registos por página",
+                    infoEmpty: "",
+                    infoFiltered: "(busca aplicada em _MAX_ registos)",
+                    search: "Buscar: ",
+                    paginate: {
+                        next: '&#8594;', // or '→'
+                        previous: '&#8592;' // or '←' 
+                    }
+                },
+            });
         $('#formEstoque').validate({
             rules: {
                 estoque: {

@@ -15,86 +15,54 @@
                     <a target="_blank" title="Imprimir" class="btn btn-mini btn-inverse" href="<?php echo site_url() ?>/vendas/imprimirTermica/<?php echo $result->idVendas; ?>"><i class="fas fa-print"></i> Imprimir Não Fiscal</a>
                 </div>
             </div>
-            <div class="widget-content" id="printOs">
-                <div class="invoice-content">
+            <div class="invoice-content">
                     <div class="invoice-head">
                         <table class="table">
                             <tbody>
-                                <?php if ($emitente == null) { ?>
                                     <tr>
-                                        <td colspan="3" class="alert">Você precisa configurar os dados do emitente. >>><a href="<?php echo base_url(); ?>index.php/mapos/emitente">Configurar</a>
-                                            <<<</td> </tr> <?php
-                                                            } else { ?> <tr>
-                                        <td style="width: 25%"><img src=" <?php echo $emitente[0]->url_logo; ?> "></td>
-                                        <td> <span style="font-size: 20px; ">
-                                                <?php echo $emitente[0]->nome; ?></span> </br><span>
-                                                <?php echo $emitente[0]->cnpj; ?> </br>
-                                                <?php echo $emitente[0]->rua . ', nº:' . $emitente[0]->numero . ', ' . $emitente[0]->bairro . ' - ' . $emitente[0]->cidade . ' - ' . $emitente[0]->uf; ?> </span> </br> <span> E-mail:
-                                                <?php echo $emitente[0]->email . ' - Fone: ' . $emitente[0]->telefone; ?></span></td>
-                                        <td style="width: 18%; text-align: center">#Venda: <span>
-                                                <?php echo $result->idVendas ?></span></br> </br> <span>Emissão:
-                                                <?php echo date('d/m/Y'); ?></span>
-                                            <?php if ($result->faturado) : ?>
-                                                <br>
-                                                Vencimento:
-                                                <?php echo date('d/m/Y', strtotime($result->data_vencimento)); ?>
-                                            <?php endif; ?>
+                                        <td style="width: 25%; border-top: 0"><img src=" <?php echo $emitente->url_logo; ?> "></td>
+                                        <td style="border-top: 0">
+                                                <h4><?php echo $emitente->nome; ?></h4>
+                                                <label><?php echo $emitente->cnpj; ?></label>
+                                                <label><?php echo $emitente->rua . ', nº:' . $emitente->numero . ', ' . $emitente->bairro . ' ' . $emitente->cidade . ' - ' . $emitente->uf; ?></label>
+                                                <label><?= $emitente->telefone; ?> / <?= $emitente->celular; ?></label>
+                                                <label><?= $emitente->email; ?></label>
+                                                
+                                            </span></td>
+                                            <td style="width: 18%; text-align: center; border-top: 0">
+                                                <h4>Nº <?php echo $result->idVendas ?></h4>
+                                            </br><span>Data Venda<br><?php echo date('d/m/Y',strtotime($result->dataVenda)); ?></span>
                                         </td>
                                     </tr>
-                                <?php
-                                } ?>
                             </tbody>
                         </table>
-                        <table class="table">
-                            <tbody>
-                                <tr>
-                                    <td style="width: 50%; padding-left: 0">
-                                        <ul>
-                                            <li>
-                                                <span>
-                                                    <h5>Cliente</h5>
-                                                    <span>
-                                                        <?php echo $result->nomeCliente ?></span><br />
-                                                    <span>
-                                                        <?php echo $result->rua ?>,
-                                                        <?php echo $result->numero ?>,
-                                                        <?php echo $result->bairro ?></span><br />
-                                                    <span>
-                                                        <?php echo $result->cidade ?> -
-                                                        <?php echo $result->estado ?><br />
-                                                        <span>Email:
-                                                            <?php echo $result->emailCliente ?></span>
-                                            </li>
-                                        </ul>
-                                    </td>
-                                    <td style="width: 50%; padding-left: 0">
-                                        <ul>
-                                            <li>
-                                                <span>
-                                                    <h5>Vendedor</h5>
-                                                </span>
-                                                <span>
-                                                    <?php echo $result->nome ?></span> <br />
-                                                <span>Telefone:
-                                                    <?php echo $result->telefone ?></span><br />
-                                                <span>Email:
-                                                    <?php echo $result->emailUser ?></span>
-                                            </li>
-                                        </ul>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                        <div style="border-top: 1px dashed #ccc;">
+                            <h4>Detalhes do Cliente</h4>
+                            
+                            <label><b>Nome:</b> <?php echo $result->nomeCliente ?></label>
+                            <label><b>CPF / CNPJ:</b> <?php echo $result->documento ?></label>
+                            <label><b>E-mail:</b> <?php echo $result->email ?></label>
+                            <label><b>Contato:</b> <?php echo $result->telefone ?> - <?php echo $result->celular ?></label>
+                            <label><b>Endereço:</b> <?php echo $result->rua ?>,
+                                <?php echo $result->numero ?>,
+                                <?php echo $result->bairro ?> - <?php echo $result->cidade ?> / <?php echo $result->estado ?>
+                            </label>
+                            <br>
+                            <label><b>Observação:</b></label>
+                            <label>Entregar na parte da manhã;<br>Na portaria chamar por Bruno Azevedo</label>
+                        </div>
                     </div>
-                    <div style="margin-top: 0; padding-top: 0">
+                    <div>
+                        <h4>Lista dos Produtos</h4>
                         <?php if ($produtos != null) { ?>
                             <table class="table table-bordered table-condensed" id="tblProdutos">
                                 <thead>
                                     <tr>
-                                        <th style="font-size: 15px">Produto</th>
-                                        <th style="font-size: 15px">Quantidade</th>
-                                        <th style="font-size: 15px">Preço unit.</th>
-                                        <th style="font-size: 15px">Sub-total</th>
+                                        <th style="font-size: 1em">Produto</th>
+                                        <th style="font-size: 1em; width: 100px; text-align: center">Quantidade</th>
+                                        <th style="font-size: 1em; width: 100px; text-align: center">Desc. %</th>
+                                        <th style="font-size: 1em; width: 150px;">Preço unit.</th>
+                                        <th style="font-size: 1em; width: 150px;">Sub-total</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -103,27 +71,19 @@
                                             $totalProdutos = $totalProdutos + $p->subTotal;
                                             echo '<tr>';
                                             echo '<td>' . $p->descricao . '</td>';
-                                            echo '<td>' . $p->quantidade . '</td>';
-                                            echo '<td>' . ($p->preco ?: $p->precoVenda) . '</td>';
-                                            echo '<td>R$ ' . number_format($p->subTotal, 2, ',', '.') . '</td>';
+                                            echo '<td style="text-align:center">' . $p->quantidade . '</td>';
+                                            echo '<td>' . ($p->desconto ? $p->desconto.'%' : '') . '</td>';
+                                            echo '<td style="text-align:right">R$ ' . number_format($p->precoVenda, 2, ',', '.') . '</td>';
+                                            echo '<td style="text-align:right">R$ ' . number_format($p->subTotal, 2, ',', '.') . '</td>';
                                             echo '</tr>';
                                         } ?>
-                                    <tr>
-                                        <td colspan="3" style="text-align: right"><strong>Total:</strong></td>
-                                        <td><strong>R$
-                                                <?php echo number_format($totalProdutos, 2, ',', '.'); ?></strong></td>
-                                    </tr>
                                 </tbody>
                             </table>
                         <?php
                         } ?>
-                        <hr />
-                        <h4 style="text-align: right">Valor Total: R$
-                            <?php echo number_format($totalProdutos, 2, ',', '.'); ?>
-                        </h4>
+                        <h4 style="text-align: right;">Valor Total: R$<?php echo number_format($totalProdutos, 2, ',', '.'); ?></h4>
                     </div>
                 </div>
-            </div>
         </div>
     </div>
 </div>

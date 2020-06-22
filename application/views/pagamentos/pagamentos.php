@@ -29,6 +29,7 @@
                                 <td colspan="6">Nenhum Pagamento Cadastrado</td>
                                 </tr>';
                     }
+                    
                     foreach ($results as $r) {
                         $textoAccessTokenShort = mb_strimwidth(strip_tags($r->access_token), 0, 10, "...");
                         $textoPublicKeyShort = mb_strimwidth(strip_tags($r->public_key), 0, 10, "...");
@@ -75,7 +76,7 @@
             <input type="hidden" id="idPag" name="idPag" value="" />
             <h5 style="text-align: center">Deseja realmente excluir esta Credencial de Pagamento?</h5>
 
-            <p style="text-align: center; margin-top: 4em;"><i><?php echo $r->nome ?></i></p>
+            <p style="text-align: center; margin-top: 4em;"><i><?php echo isset($r) ? $r->nome : '' ?></i></p>
         </div>
         <div class="modal-footer">
             <button class="btn" data-dismiss="modal" aria-hidden="true">Cancelar</button>

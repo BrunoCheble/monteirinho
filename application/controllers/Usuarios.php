@@ -70,6 +70,7 @@ class Usuarios extends MY_Controller
                 'celular' => set_value('celular'),
                 'dataExpiracao' => set_value('dataExpiracao'),
                 'situacao' => set_value('situacao'),
+                'emitente_id' => 1,
                 'permissoes_id' => $this->input->post('permissoes_id'),
                 'dataCadastro' => date('Y-m-d'),
             ];

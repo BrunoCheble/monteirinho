@@ -56,6 +56,83 @@ $config = [
             'rules' => 'required|trim',
         ]
     ],
+    'fornecedores' => [
+        [
+            'field' => 'nomeFornecedor',
+            'label' => 'Nome',
+            'rules' => 'required|trim',
+        ],
+        [
+            'field' => 'documento',
+            'label' => 'CPF/CNPJ',
+            'rules' => 'required|trim|verific_cpf_cnpj',
+            'errors' => [
+                'verific_cpf_cnpj' => "O campo %s não é um CPF ou CNPJ válido."
+            ],
+        ],
+        [
+            'field' => 'telefone',
+            'label' => 'Telefone',
+            'rules' => 'required|trim',
+        ],
+        [
+            'field' => 'email',
+            'label' => 'Email',
+            'rules' => 'required|trim|valid_email',
+        ],
+        [
+            'field' => 'rua',
+            'label' => 'Rua',
+            'rules' => 'required|trim',
+        ],
+        [
+            'field' => 'numero',
+            'label' => 'Número',
+            'rules' => 'required|trim',
+        ],
+        [
+            'field' => 'bairro',
+            'label' => 'Bairro',
+            'rules' => 'required|trim',
+        ],
+        [
+            'field' => 'cidade',
+            'label' => 'Cidade',
+            'rules' => 'required|trim',
+        ],
+        [
+            'field' => 'estado',
+            'label' => 'Estado',
+            'rules' => 'required|trim',
+        ],
+        [
+            'field' => 'cep',
+            'label' => 'CEP',
+            'rules' => 'required|trim',
+        ]
+    ],
+    'agendamentos' => [
+        [
+            'field' => 'titulo',
+            'label' => 'Título',
+            'rules' => 'required|trim',
+        ],
+        [
+            'field' => 'descricao',
+            'label' => 'Descrição',
+            'rules' => 'required|trim',
+        ],
+        [
+            'field' => 'data',
+            'label' => 'Data',
+            'rules' => 'required|trim',
+        ],
+        [
+            'field' => 'vendas_id',
+            'label' => 'Nº da Venda',
+            'rules' => 'trim',
+        ]
+    ],
     'servicos' => [
         [
             'field' => 'nome',
@@ -259,14 +336,8 @@ $config = [
             'rules' => 'required|trim',
         ],
         [
-            'field' => 'vencimento',
-            'label' => 'Data Vencimento',
-            'rules' => 'required|trim',
-        ],
-
-        [
-            'field' => 'cliente',
-            'label' => 'Cliente',
+            'field' => 'recebimento',
+            'label' => 'Data',
             'rules' => 'required|trim',
         ],
         [
@@ -287,14 +358,14 @@ $config = [
             'rules' => 'required|trim',
         ],
         [
-            'field' => 'vencimento',
-            'label' => 'Data Vencimento',
+            'field' => 'recebimento',
+            'label' => 'Data',
             'rules' => 'required|trim',
         ],
         [
             'field' => 'fornecedor',
             'label' => 'Fornecedor',
-            'rules' => 'required|trim',
+            'rules' => 'trim',
         ],
         [
             'field' => 'tipo',

@@ -260,7 +260,7 @@ class Github_updater
         $version = $latestRelease->tag_name;
 
         if (!$version) {
-            throw new Exception('Error getting mapos version from GitHub!');
+            throw new Exception('Error getting PDV version from GitHub!');
         }
 
         return str_replace("v", "", $version);

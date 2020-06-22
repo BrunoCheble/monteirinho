@@ -19,10 +19,11 @@ class Vendas_model extends CI_Model
     
     public function get($table, $fields, $where = '', $perpage = 0, $start = 0, $one = false, $array = 'array')
     {
-        $this->db->select($fields.', clientes.nomeCliente, clientes.idClientes');
+        $this->db->select($fields.', clientes.nomeCliente, clientes.idClientes, usuarios.nome as usuario');
         $this->db->from($table);
         $this->db->limit($perpage, $start);
         $this->db->join('clientes', 'clientes.idClientes = '.$table.'.clientes_id');
+        $this->db->join('usuarios', 'usuarios.idUsuarios = vendas.usuarios_id');
         $this->db->order_by('idVendas', 'desc');
         if ($where) {
             $this->db->where($where);
@@ -36,7 +37,7 @@ class Vendas_model extends CI_Model
 
     public function getById($id)
     {
-        $this->db->select('vendas.*, clientes.*, clientes.email as emailCliente, lancamentos.data_vencimento, usuarios.telefone, usuarios.email as emailUser, usuarios.nome');
+        $this->db->select('vendas.*, clientes.*, clientes.email as emailCliente, lancamentos.data_vencimento, clientes.telefone, clientes.celular, clientes.email, clientes.documento, usuarios.emitente_id');
         $this->db->from('vendas');
         $this->db->join('clientes', 'clientes.idClientes = vendas.clientes_id');
         $this->db->join('usuarios', 'usuarios.idUsuarios = vendas.usuarios_id');
@@ -119,7 +120,7 @@ class Vendas_model extends CI_Model
         $query = $this->db->get('clientes');
         if ($query->num_rows() > 0) {
             foreach ($query->result_array() as $row) {
-                $row_set[] = ['label'=>$row['nomeCliente'].' | Telefone: '.$row['telefone'],'id'=>$row['idClientes']];
+                $row_set[] = ['label'=>$row['nomeCliente'].' | Doc.: '.$row['documento'],'id'=>$row['idClientes']];
             }
             echo json_encode($row_set);
         }
@@ -137,6 +138,15 @@ class Vendas_model extends CI_Model
                 $row_set[] = ['label'=>$row['nome'].' | Telefone: '.$row['telefone'],'id'=>$row['idUsuarios']];
             }
             echo json_encode($row_set);
+        }
+    }
+
+    public function updateTotalVenda($venda_id) {
+        $totalProdutos = $this->db->select('SUM(subTotal) as total')->where('vendas_id', $venda_id)->get('itens_de_vendas');
+        if($totalProdutos->num_rows() == 1) {
+            $this->db->set('valorTotal', $totalProdutos->row()->total);
+            $this->db->where('idVendas', $venda_id);
+            $this->db->update('vendas');
         }
     }
 }

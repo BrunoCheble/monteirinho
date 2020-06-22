@@ -23,7 +23,7 @@
         <form action="<?= site_url('mapos/cadastrarEmitente'); ?>" id="formCadastrar" enctype="multipart/form-data" method="post" class="form-horizontal">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                <h3 id="myModalLabel">MapOS - Cadastrar Dados do Emitente</h3>
+                <h3 id="myModalLabel">PDV - Cadastrar Dados do Emitente</h3>
             </div>
             <div class="modal-body">
 
@@ -121,14 +121,16 @@
                     <div class="alert alert-info">Os dados abaixo serão utilizados no cabeçalho das telas de impressão.</div>
                     <table class="table table-bordered">
                         <tbody>
+                            <?php foreach($dados as $emitente) : ?>
                             <tr>
-                                <td style="width: 25%"><img src=" <?= $dados[0]->url_logo; ?> "></td>
+                                <td style="width: 25%"><img src=" <?= $emitente->url_logo; ?> "></td>
                                 <td> <span style="font-size: 20px; ">
-                                        <?= $dados[0]->nome; ?> </span> </br><span>
-                                        <?= $dados[0]->cnpj; ?> </br>
-                                        <?= $dados[0]->rua . ', nº:' . $dados[0]->numero . ', ' . $dados[0]->bairro . ' - ' . $dados[0]->cidade . ' - ' . $dados[0]->uf; ?> </span> </br> <span> E-mail:
-                                        <?= $dados[0]->email . ' - Fone: ' . $dados[0]->telefone; ?></span></td>
+                                        <?= $emitente->nome; ?> </span> </br><span>
+                                        <?= $emitente->cnpj; ?> </br>
+                                        <?= $emitente->rua . ', nº:' . $emitente->numero . ', ' . $emitente->bairro . ' - ' . $emitente->cidade . ' - ' . $emitente->uf; ?> </span> </br> <span> E-mail:
+                                        <?= $emitente->email . ' - Fone: ' . $emitente->telefone; ?></span></td>
                             </tr>
+                            <?php endforeach; ?>
                         </tbody>
                     </table>
 
@@ -146,7 +148,7 @@
         <form action="<?= site_url('mapos/editarEmitente'); ?>" id="formAlterar" enctype="multipart/form-data" method="post" class="form-horizontal">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                <h3 id="">MapOS - Editar Dados do Emitente</h3>
+                <h3 id="">PDV - Editar Dados do Emitente</h3>
             </div>
             <div class="modal-body">
 
@@ -224,7 +226,7 @@
         <form action="<?= site_url('mapos/editarLogo'); ?>" id="formLogo" enctype="multipart/form-data" method="post" class="form-horizontal">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                <h3 id="">MapOS - Atualizar Logotipo</h3>
+                <h3 id="">PDV - Atualizar Logotipo</h3>
             </div>
             <div class="modal-body">
                 <div class="span12 alert alert-info">Selecione uma nova imagem da logotipo. Tamanho indicado (130 X 130).</div>

@@ -953,6 +953,7 @@ span.icon .checker {
 	margin-top: -5px;
 	margin-right: 0;
 }
+/*
 .dataTables_length {
 	color: #878787;
 	margin: 7px 5px 0;
@@ -980,7 +981,7 @@ span.icon .checker {
 	padding: 4px 10px !important;
 	border-style: solid;
 	border-width: 1px;
-	border-color: #dddddd #dddddd #cccccc; /* for IE < 9 */
+	border-color: #dddddd #dddddd #cccccc;
 	border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
 	display: inline-block;
 	line-height: 16px;
@@ -1053,6 +1054,7 @@ div.dataTables_wrapper .ui-widget-header {
 .table tr.checked td {
 	background-color: #FFFFE3 !important;
 }
+*/
 /* Misc */
 .nopadding {
 	padding: 0 !important;
@@ -1658,7 +1660,7 @@ fieldset[disabled] .btn-info.active {
 	background-size: 100% 100%;
 }
 
-@media (max-width: 970px) and (min-width: 481px) {
+@media (max-width: 1366px) and (min-width: 481px) {
 	#header h1 {
 		background: url("../img/logo-sys.png") no-repeat scroll 0 0 transparent;
 		width: 220px;
@@ -1668,7 +1670,42 @@ fieldset[disabled] .btn-info.active {
 		margin: 0px;
 	}
 	
-#sidebar > ul {
-	margin: 0 0 0;
+	#sidebar > ul {
+		margin: 0 0 0;
+	}
+	
+	#content {
+		margin-left: 43px;
+		margin-top: 0px;
+	}
+	.row-fluid {
+		width: 100%;
+    *zoom: 1;
+	}
+	#sidebar, #sidebar > ul {
+    width: 43px;
+    display: block;
+    position: absolute;
+    height: 100%;
+    z-index: 1;
+	}
+	#sidebar > ul > li {
+			float: none;
+	}
+	#sidebar > ul > li > a > span {
+			display: none;
+	}
+	#sidebar > ul ul {
+    display: none;
+    position: absolute;
+    left: 43px;
+    top: 0;
+    min-width: 150px;
+    list-style: none;
 }
+}
+
+
+body {
+	background: #ffffff!important;
 }

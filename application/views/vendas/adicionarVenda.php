@@ -11,7 +11,7 @@
                 <h5>Cadastro de venda</h5>
             </div>
             <div class="widget-content nopadding">
-                <div class="span12" id="divProdutosServicos" style=" margin-left: 0">
+                <div class="span12" id="divProdutosServicos" style="margin-left: 0">
                     <ul class="nav nav-tabs">
                         <li class="active" id="tabDetalhes"><a href="#tab1" data-toggle="tab">Detalhes da venda</a></li>
                     </ul>
@@ -32,16 +32,14 @@
                                             <input id="cliente" class="span12" type="text" name="cliente" value="" />
                                             <input id="clientes_id" class="span12" type="hidden" name="clientes_id" value="" />
                                         </div>
-                                        <div class="span5">
+                                        <div style="display:none" class="span5">
                                             <label for="tecnico">Vendedor<span class="required">*</span></label>
                                             <input id="tecnico" class="span12" type="text" name="tecnico" value="<?= $this->session->userdata('nome'); ?>" />
                                             <input id="usuarios_id" class="span12" type="hidden" name="usuarios_id" value="<?= $this->session->userdata('id'); ?>" />
                                         </div>
-                                    </div>
-                                    <div class="span12" style="padding: 1%; margin-left: 0">
-                                        <div class="span6 offset3" style="text-align: center">
-                                            <button class="btn btn-success" id="btnContinuar"><i class="fas fa-share"></i> Continuar</button>
-                                            <a href="<?php echo base_url() ?>index.php/vendas" class="btn"><i class="fas fa-backward"></i> Voltar</a>
+                                        <div class="span5" style="text-align: right">
+                                            <button class="btn btn-success" id="btnContinuar"><i class="fas fa-share"></i><br>Continuar</button>
+                                            <a href="<?php echo base_url() ?>index.php/vendas" class="btn"><i class="fas fa-backward"></i><br>Voltar</a>
                                         </div>
                                     </div>
                                 </form>
