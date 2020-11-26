@@ -30,25 +30,37 @@
       <div class="row-fluid">
         <div class="span6">
           <label><i class="fas fa-calendar-day tip-top" title="Data início"></i> Data Início</label>
-          <input class="span12 datepicker" name="data_inicio" value="<?= $data_inicio; ?>" type="text">
+          <input class="span12 datepicker" autocomplete="off" name="data_inicio" value="<?= isset($data_inicio) ? $data_inicio : date('01/m/Y'); ?>" type="text">
         </div>
         <div class="span6">
           <label><i class="fas fa-calendar-day tip-top" title="Data fim"></i> Data Fim</label>
-          <input class="span12 datepicker" name="data_fim" value="<?= $data_fim; ?>" type="text">
+          <input class="span12 datepicker" autocomplete="off" name="data_fim" value="<?= isset($data_fim) ? $data_fim : date('d/m/Y'); ?>" type="text">
         </div>
       </div>
         
       <div class="row-fluid">
+      
+        <?php if ($this->session->userdata('permissao') != 2) : ?>
+          <div class="span6">
+            <label><i class="fas fa-store tip-top" title="Lançamentos com vencimento no período."></i> Loja</label>
+            <select name="loja" class="span12">
+              <option selected value="0">Todas</option>
+              <option value="<?= getenv('loja_austin'); ?>">Austin</option>
+              <option value="<?= getenv('loja_philomeno'); ?>">Philomeno</option>
+            </select>
+          </div>
+        <?php endif; ?>
+        
         <div class="span6">
-          <label><i class="fas fa-store tip-top" title="Lançamentos com vencimento no período."></i> Loja</label>
-          <select name="loja" class="span12">
-            <option value="0">Todas</option>
-            <option value="2">Loja A</option>
-            <option value="3">Loja B</option>
+          <label><i class="fas fa-flag tip-top" title="Situações das vendas"></i> Situação</label>
+          <select name="estado" class="span12">
+            <option selected value="0">Todas</option>
+            <option value="nao_faturados">Não faturados</option>
+            <option value="cancelados">Cancelados</option>
           </select>
         </div>
-      </div>
 
+      </div>
     </div>
     <div class="modal-footer">
       <button class="btn" data-dismiss="modal" aria-hidden="true" id="btnCancelarEditar">Cancelar</button>
@@ -77,16 +89,24 @@
 
 <script type="text/javascript">
     $(document).ready(function() {
+      <?php if(isset($loja_filtrada)) : ?>
+      $('#modalFiltro [name="loja"]').val(<?= $loja_filtrada; ?>);
+      <?php endif; ?>
+      
+      <?php if(isset($estado_filtrado)) : ?>
+      $('#modalFiltro [name="estado"]').val('<?= $estado_filtrado; ?>');
+      <?php endif; ?>
+
         $(document).on('click', 'a', function(event) {
             var venda = $(this).attr('venda');
             $('#idVenda').val(venda);
         });
 
-        $('[name="loja"]').val('<?= $loja; ?>');
         $(".datepicker").datepicker({
             dateFormat: 'dd/mm/yy'
         });
         $('.table').DataTable({
+                order: [[ 0, "desc" ]],
                 language: {
                     info: "Exibindo _START_ a _END_ de _TOTAL_ registos",
                     zeroRecords: "Nenhum registos foi encontrado",
@@ -99,6 +119,8 @@
                         previous: '&#8592;' // or '←' 
                     }
                 },
+                recordsTotal: 1000,
+                lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
                 dom: "Blfrtip",
                 buttons: [
                     {
@@ -109,6 +131,7 @@
                         },
                         customize: function(win) {
                             $(win.document.body).find('h1').text('Clientes');
+                            $(win.document.body).append('<h3 style="text-align: right;">Total das vendas: '+$('#total-vendas').text()+'</h3>');
                         }
                     },
                 ]

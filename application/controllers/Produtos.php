@@ -52,19 +52,25 @@ class Produtos extends MY_Controller
             $this->data['custom_error'] = (validation_errors() ? '<div class="form_error">' . validation_errors() . '</div>' : false);
         } else {
             $precoCompra = $this->input->post('precoCompra');
-            $precoCompra = str_replace(",", "", $precoCompra);
+            $precoCompra = str_replace(['.',','],['','.'], $precoCompra);
             $precoVenda = $this->input->post('precoVenda');
-            $precoVenda = str_replace(",", "", $precoVenda);
+            $precoVenda = str_replace(['.',','],['','.'], $precoVenda);
+            $precoVendaDinheiro = $this->input->post('precoVendaDinheiro');
+            $precoVendaDinheiro = str_replace(['.',','],['','.'], $precoVendaDinheiro);
             $data = [
                 'codDeBarra' => set_value('codDeBarra'),
                 'descricao' => set_value('descricao'),
-                'unidade' => set_value('unidade'),
+                'unidade' => 'UN',
                 'precoCompra' => $precoCompra,
                 'precoVenda' => $precoVenda,
+                'precoVendaDinheiro' => $precoVendaDinheiro,
                 'estoque' => set_value('estoque'),
                 'estoqueMinimo' => set_value('estoqueMinimo'),
                 'saida' => set_value('saida'),
                 'entrada' => set_value('entrada'),
+                'numParcelas' => set_value('numParcelas'),
+                'ncm' => set_value('ncm'),
+                'foto' => set_value('foto'),
             ];
 
             if ($this->produtos_model->add('produtos', $data) == true) {
@@ -97,19 +103,26 @@ class Produtos extends MY_Controller
             $this->data['custom_error'] = (validation_errors() ? '<div class="form_error">' . validation_errors() . '</div>' : false);
         } else {
             $precoCompra = $this->input->post('precoCompra');
-            $precoCompra = str_replace(",", "", $precoCompra);
+            $precoCompra = str_replace(['.',','],['','.'], $precoCompra);
             $precoVenda = $this->input->post('precoVenda');
-            $precoVenda = str_replace(",", "", $precoVenda);
+            $precoVenda = str_replace(['.',','],['','.'], $precoVenda);
+            $precoVendaDinheiro = $this->input->post('precoVendaDinheiro');
+            $precoVendaDinheiro = str_replace(['.',','],['','.'], $precoVendaDinheiro);
+
             $data = [
                 'codDeBarra' => set_value('codDeBarra'),
                 'descricao' => $this->input->post('descricao'),
-                'unidade' => $this->input->post('unidade'),
+                'unidade' => 'UN',
                 'precoCompra' => $precoCompra,
                 'precoVenda' => $precoVenda,
+                'precoVendaDinheiro' => $precoVendaDinheiro,
                 'estoque' => $this->input->post('estoque'),
                 'estoqueMinimo' => $this->input->post('estoqueMinimo'),
                 'saida' => set_value('saida'),
                 'entrada' => set_value('entrada'),
+                'numParcelas' => $this->input->post('numParcelas'),
+                'ncm' => $this->input->post('ncm'),
+                'foto' => $this->input->post('foto'),
             ];
 
             if ($this->produtos_model->edit('produtos', $data, 'idProdutos', $this->input->post('idProdutos')) == true) {
@@ -140,7 +153,6 @@ class Produtos extends MY_Controller
         }
 
         $this->data['result'] = $this->produtos_model->getById($this->uri->segment(3));
-
         if ($this->data['result'] == null) {
             $this->session->set_flashdata('error', 'Produto não encontrado.');
             redirect(site_url('produtos/editar/') . $this->input->post('idProdutos'));
@@ -159,12 +171,17 @@ class Produtos extends MY_Controller
 
         $id = $this->input->post('id');
         if ($id == null) {
-            $this->session->set_flashdata('error', 'Erro ao tentar excluir produto.');
-            redirect(base_url() . 'index.php/produtos/gerenciar/');
+            $this->session->set_flashdata('error', 'Erro ao tentar excluir o produto.');
+            redirect(site_url('produtos/gerenciar/'));
         }
 
-        $this->produtos_model->delete('produtos_os', 'produtos_id', $id);
-        $this->produtos_model->delete('itens_de_vendas', 'produtos_id', $id);
+        $valida = $this->produtos_model->jaVendido($id);
+        if ($valida) {
+            $this->session->set_flashdata('error', 'Erro ao tentar excluir o produto, pois já foi vendido.');
+            redirect(site_url('produtos/gerenciar/'));
+        }
+        //$this->produtos_model->delete('produtos_os', 'produtos_id', $id);
+        //$this->produtos_model->delete('itens_de_vendas', 'produtos_id', $id);
         $this->produtos_model->delete('produtos', 'idProdutos', $id);
 
         log_info('Removeu um produto. ID: ' . $id);
@@ -200,11 +217,19 @@ class Produtos extends MY_Controller
     }
 
     public function get_table() {
-        $produtos = $this->produtos_model->get('produtos', '*', '', $this->data['configuration']['per_page'], $this->uri->segment(3));
+        $produtos = $this->produtos_model->get(
+            'produtos', 
+            'produtos.*, (select count(idItens) from itens_de_vendas where produtos_id = produtos.idProdutos limit 1) as jaVendido', 
+            '', 
+            10000, 
+            0
+        );
+
+        $permissao_admin_produto = $this->permission->checkPermission($this->session->userdata('permissao'), 'aProduto');
 
         foreach ($produtos as $produto) {
             
-            if($this->session->userdata('permission') == 2) {
+            if($permissao_admin_produto) {
                 $actions = [];
                 if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vProduto')) {
                     $actions[] = '<a style="margin-right: 1%" href="' . base_url() . 'index.php/produtos/visualizar/' . $produto->idProdutos . '" class="btn tip-top" title="Visualizar Produto"><i class="fas fa-eye"></i></a>  ';
@@ -212,29 +237,36 @@ class Produtos extends MY_Controller
                 if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eProduto')) {
                     $actions[] = '<a style="margin-right: 1%" href="' . base_url() . 'index.php/produtos/editar/' . $produto->idProdutos . '" class="btn btn-info tip-top" title="Editar Produto"><i class="fas fa-edit"></i></a>';
                 }
-                if ($this->permission->checkPermission($this->session->userdata('permissao'), 'dProduto')) {
-                    $actions[] = '<a style="margin-right: 1%" href="#modal-excluir" role="button" data-toggle="modal" produto="' . $produto->idProdutos . '" class="btn btn-danger tip-top" title="Excluir Produto"><i class="fas fa-trash-alt"></i></a>';
-                }
                 if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eProduto')) {
                     $actions[] = '<a href="#atualizar-estoque" role="button" data-toggle="modal" produto="' . $produto->idProdutos . '" estoque="' . $produto->estoque . '" class="btn btn-primary tip-top" title="Atualizar Estoque"><i class="fas fa-plus-square"></i></a>';
+                }
+                if ($this->permission->checkPermission($this->session->userdata('permissao'), 'dProduto') && $produto->jaVendido == 0) {
+                    $actions[] = '<a style="margin-right: 1%" href="#modal-excluir" role="button" data-toggle="modal" produto="' . $produto->idProdutos . '" class="btn btn-danger tip-top" title="Excluir Produto"><i class="fas fa-trash-alt"></i></a>';
                 }
 
                 $data = [
                     $produto->codDeBarra,
+                    $produto->ncm,
                     $produto->descricao,
                     ['data' => $produto->estoque, 'style' => 'text-align: center'],
                     ['data' => $produto->estoqueMinimo, 'style' => 'text-align: center'],
-                    ['data' => 'R$ '.number_format($produto->precoCompra, 2, ',', '.'), 'style' => 'text-align: right'],
-                    ['data' => 'R$ '.number_format($produto->precoVenda, 2, ',', '.'), 'style' => 'text-align: right'],
-                    ['data' => implode(' ',$actions), 'style' => 'text-align: center; width: 200px'],
+                    ['data' => 'R$ '.number_format($produto->precoCompra, 2, ',', '.'), 'style' => 'text-align: right', 'data-sort' => floatval($produto->precoCompra)],
+                    ['data' => 'R$ '.number_format($produto->precoVenda, 2, ',', '.'), 'style' => 'text-align: right', 'data-sort' => floatval($produto->precoVenda)],
+                    ['data' => $produto->numParcelas, 'style' => 'text-align: center', 'data-sort' => $produto->numParcelas],
+                    ['data' => 'R$ '.number_format($produto->precoVendaDinheiro, 2, ',', '.'), 'style' => 'text-align: right', 'data-sort' => floatval($produto->precoVendaDinheiro)],
+                    ['data' => implode(' ',$actions), 'style' => 'text-align: left; width: 200px'],
                 ];
             }
             else {
                 $data = [
                     $produto->codDeBarra,
+                    $produto->ncm,
                     $produto->descricao,
                     ['data' => $produto->estoque, 'style' => 'text-align: center'],
                     ['data' => 'R$ '.number_format($produto->precoVenda, 2, ',', '.'), 'style' => 'text-align: right'],
+                    ['data' => $produto->numParcelas, 'style' => 'text-align: center', 'data-sort' => $produto->numParcelas],
+                    ['data' => 'R$ '.number_format($produto->precoVendaDinheiro, 2, ',', '.'), 'style' => 'text-align: right'],
+                    ['data' => $produto->foto != '' ? '<a href="'.$produto->foto.'" target="_new" class="btn btn-default" title="Ver foto"><i class="fa fa-image"></i></a>' : '']
                 ];
             }
 
@@ -243,11 +275,11 @@ class Produtos extends MY_Controller
         
         $this->table->set_template(['table_open' => '<table class="table table-bordered">']);
         
-        if($this->session->userdata('permission') == 2) {
-            $this->table->set_heading('Cod. Produto','Nome', 'Estoque Atual','Estoque Mín','Preço Compra', 'Preço Venda','Ações');
+        if($permissao_admin_produto) {
+            $this->table->set_heading('Cod. Produto','NCM','Nome', 'Estoque Atual','Mostruário','Preço Compra', 'P.V. no Cartão', 'Nº Parcelas', 'P.V. no Dinheiro','Ações');
         }
         else {
-            $this->table->set_heading('Cod. Produto','Nome', 'Estoque Atual','Preço Venda');
+            $this->table->set_heading('Cod. Produto','NCM','Nome', 'Estoque Atual','P.V. no Cartão', 'Nº Parcelas', 'P.V. no Dinheiro','');
         }
         return $this->table->generate();
     }

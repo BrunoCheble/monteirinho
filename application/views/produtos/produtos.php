@@ -1,10 +1,9 @@
 <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'aProduto')) { ?>
     <a href="<?php echo base_url(); ?>index.php/produtos/adicionar" class="btn btn-success"><i class="fas fa-plus"></i> Adicionar Produto</a>
-    
-    <a href="<?php echo base_url(); ?>index.php/relatorios/produtosEstoque" target="_new" class="btn btn-primary span2" style="float: right;">
-        <i class="fas fa-print"></i> Imprimir Estoque</a>
-    
 <?php } ?>
+
+<a href="<?php echo base_url(); ?>index.php/relatorios/produtosRapid" target="_new" class="btn btn-primary span3" style="float: right;">
+        <i class="fas fa-print"></i> Imprimir Produtos</a>
 
 <div class="widget-box">
     <div class="widget-title">
@@ -126,6 +125,7 @@
         });
 
         $('.table').DataTable({
+                order: [[ 1, "asc" ]],
                 language: {
                     info: "Exibindo _START_ a _END_ de _TOTAL_ registos",
                     zeroRecords: "Nenhum registos foi encontrado",

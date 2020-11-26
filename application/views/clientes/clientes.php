@@ -25,7 +25,7 @@
         </div>
         <div class="modal-body">
             <input type="hidden" id="idCliente" name="id" value="" />
-            <h5 style="text-align: center">Deseja realmente excluir este cliente e os dados associados a ele (OS, Vendas, Receitas)?</h5>
+            <h5 style="text-align: center">Deseja realmente excluir este cliente ?</h5>
         </div>
         <div class="modal-footer">
             <button class="btn" data-dismiss="modal" aria-hidden="true">Cancelar</button>

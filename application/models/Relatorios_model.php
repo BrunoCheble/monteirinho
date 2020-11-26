@@ -90,7 +90,7 @@ class Relatorios_model extends CI_Model
 
     public function produtosRapid()
     {
-        $this->db->order_by('descricao', 'asc');
+        $this->db->order_by('estoque desc, descricao asc');
 
         return $this->db->get('produtos')->result();
     }

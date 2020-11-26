@@ -6,6 +6,9 @@ $().ready(function () {
 
 // Removendo o atributo tittle para dispositivos moveis. 
 $(document).ready(function () {
+    $('form').submit(function() {
+        $('#loading').show();
+    });
     if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
         $(".tip-top").removeAttr("title");
     }
@@ -23,7 +26,14 @@ function showTimer() {
 
     var st = hour + ":" + minute + ":" + second; document.getElementById("timer").innerHTML = st;
 }
-
+function isNumber(evt) {
+    evt = (evt) ? evt : window.event;
+    var charCode = (evt.which) ? evt.which : evt.keyCode;
+    if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+        return false;
+    }
+    return true;
+}
 function initTimer() {
 
     // O metodo nativo setInterval executa uma determinada funcao em um determinado tempo

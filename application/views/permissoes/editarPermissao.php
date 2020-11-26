@@ -146,6 +146,52 @@
                         </tr>
                                 <tr><td colspan="4"></td></tr>
 
+                                <tr>
+                            <td>
+                                <label>
+                                    <input <?php if (isset($permissoes['vAssistencia'])) {
+                            if ($permissoes['vAssistencia'] == '1') {
+                            echo 'checked';
+                            }
+                            }?> name="vAssistencia" class="marcar" type="checkbox" value="1" />
+                                    <span class="lbl"> Visualizar Assistencia</span>
+                                </label>
+                            </td>
+
+                            <td>
+                                <label>
+                                    <input <?php if (isset($permissoes['aAssistencia'])) {
+                            if ($permissoes['aAssistencia'] == '1') {
+                            echo 'checked';
+                            }
+                            }?> name="aAssistencia" class="marcar" type="checkbox" value="1" />
+                                    <span class="lbl"> Adicionar Assistencia</span>
+                                </label>
+                            </td>
+
+                            <td>
+                                <label>
+                                    <input <?php if (isset($permissoes['eAssistencia'])) {
+                            if ($permissoes['eAssistencia'] == '1') {
+                            echo 'checked';
+                            }
+                            }?> name="eAssistencia" class="marcar" type="checkbox" value="1" />
+                                    <span class="lbl"> Editar Assistencia</span>
+                                </label>
+                            </td>
+                            <td>
+                                <label>
+                                    <input <?php if (isset($permissoes['dAssistencia'])) {
+                            if ($permissoes['dAssistencia'] == '1') {
+                            echo 'checked';
+                            }
+                            }?> name="dAssistencia" class="marcar" type="checkbox" value="1" />
+                                    <span class="lbl"> Excluir Assistencia</span>
+                                </label>
+                            </td>
+                        </tr>
+                                <tr><td colspan="4"></td></tr>
+                        
                         <tr>
                             <td>
                                 <label>

@@ -32,13 +32,13 @@
         return number_format($percent, 2).'%';
     }
 ?>
-<body style="background-color: transparent; font-size:12px;">
+<body style="background-color: transparent; font-size:10px; line-height: 10px; margin: 0; padding:0;">
     <div class="container-fluid">
         <div class="row-fluid">
             <div class="span12">
                 <div class="widget-box">
                     <div class="widget-title">
-                        <h4 style="text-align: center">Produtos em Estoque</h4>
+                        <h4 style="text-align: center">Relatório de Produtos - Admin</h4>
                     </div>
                     <div class="widget-content nopadding">
                         <table class="table table-bordered">
@@ -56,20 +56,37 @@
                             </thead>
                             <tbody>
                                 <?php
-                                    $totalCompra = 0;
-                                    $totalVenda = 0;
-                                    $totalVendaDinheiro = 0;
-                                    $total = 0;
                                     $totalQtt = 0;
-                                    $totalDinheiro = 0;
+
+                                    $resumo = [
+                                      'lucro' => [
+                                        'totalCartao' => 0,
+                                        'totalDinheiro' => 0,
+                                      ],
+                                      'no_estoque' => [
+                                        'totalCompra' => 0,
+                                        'totalVendaNoCartao' => 0,
+                                        'totalVendaNoDinheiro' => 0,
+                                      ],
+                                      'geral' => [
+                                        'totalCompra' => 0,
+                                        'totalVendaNoCartao' => 0,
+                                        'totalVendaNoDinheiro' => 0,
+                                      ],
+                                    ];
 
                                     foreach ($produtos as $p) {
-                                        $total += ($p->precoVenda-$p->precoCompra)*$p->estoque;
-                                        $totalCompra += $p->precoCompra*$p->estoque;
-                                        $totalVenda += $p->precoVenda*$p->estoque;
 
-                                        $totalVendaDinheiro += $p->precoVendaDinheiro*$p->estoque;
-                                        $totalDinheiro += ($p->precoVendaDinheiro-$p->precoCompra)*$p->estoque;
+                                        $resumo['lucro']['totalCartao'] += ($p->precoVenda-$p->precoCompra)*$p->estoque;
+                                        $resumo['lucro']['totalDinheiro'] += ($p->precoVendaDinheiro-$p->precoCompra)*$p->estoque;
+
+                                        $resumo['no_estoque']['totalCompra']  += $p->precoCompra*$p->estoque;
+                                        $resumo['no_estoque']['totalVendaNoCartao'] += $p->precoVenda*$p->estoque;
+                                        $resumo['no_estoque']['totalVendaNoDinheiro'] += $p->precoVendaDinheiro*$p->estoque;
+
+                                        $resumo['geral']['totalCompra'] += $p->precoCompra;
+                                        $resumo['geral']['totalVendaNoCartao'] += $p->precoVenda;
+                                        $resumo['geral']['totalVendaNoDinheiro'] += $p->precoVendaDinheiro;
 
                                         $totalQtt += $p->estoque;
                                         echo '<tr>';
@@ -87,12 +104,21 @@
                             </tbody>
                             <tfoot>
                                 <tr>
-                                    <td style="text-align: right; font-weight: bold" colspan="2">Total</td>
-                                    <td>R$ <?= number_format($totalCompra, 2, ',', '.'); ?></td>
-                                    <td>R$ <?= number_format($totalVenda, 2, ',', '.'); ?></td>
+                                    <td style="text-align: right; font-weight: bold" colspan="2">Total (sem considerar a quantidade)</td>
+                                    <td style="text-align: center">R$<?= number_format($resumo['geral']['totalCompra'], 2, ',', '.'); ?></td>
+                                    <td style="text-align: center">R$<?= number_format($resumo['geral']['totalVendaNoCartao'], 2, ',', '.'); ?></td>
                                     <td></td>
-                                    <td>R$ <?= number_format($totalVendaDinheiro, 2, ',', '.'); ?></td>
+                                    <td style="text-align: center">R$<?= number_format($resumo['geral']['totalVendaNoDinheiro'], 2, ',', '.'); ?></td>
                                     <td></td>
+                                    <td style="text-align: center"></td>
+                                </tr>
+                                <tr>
+                                    <td style="text-align: right; font-weight: bold" colspan="2">Total (considerando a quantidade)</td>
+                                    <td style="text-align: center">R$<?= number_format($resumo['no_estoque']['totalCompra'], 2, ',', '.'); ?></td>
+                                    <td style="text-align: center">R$<?= number_format($resumo['no_estoque']['totalVendaNoCartao'], 2, ',', '.'); ?></td>
+                                    <td style="text-align: center"><?= get_diff_percent($resumo['no_estoque']['totalVendaNoCartao'],$resumo['no_estoque']['totalCompra']); ?></td>
+                                    <td style="text-align: center">R$<?= number_format($resumo['no_estoque']['totalVendaNoDinheiro'], 2, ',', '.'); ?></td>
+                                    <td style="text-align: center"><?= get_diff_percent($resumo['no_estoque']['totalVendaNoDinheiro'],$resumo['no_estoque']['totalCompra']); ?></td>
                                     <td style="text-align: center"><?= $totalQtt; ?></td>
                                 </tr>
                             </tfoot>
@@ -100,9 +126,16 @@
                     </div>
                 </div>
 
-                <?php $percentualLucro = $totalVenda-$totalCompra ?>
-                <h5 style="text-align: right">Total de lucro no cartão: R$ <?= number_format($total, 2, ',', '.'); ?> (<?= get_diff_percent($totalVenda,$totalCompra); ?>)</h5>
-                <h5 style="text-align: right">Total de lucro no dinheiro: R$ <?= number_format($totalDinheiro, 2, ',', '.'); ?> (<?= get_diff_percent($totalVendaDinheiro,$totalCompra); ?>)</h5>
+                <h5 style="text-align: right">
+                  Total de lucro no cartão: R$ <?= number_format($resumo['lucro']['totalCartao'], 2, ',', '.'); ?> 
+                  (<?= get_diff_percent($resumo['no_estoque']['totalVendaNoCartao'],$resumo['no_estoque']['totalCompra']); ?>)
+                </h5>
+
+                <h5 style="text-align: right">
+                  Total de lucro no dinheiro: R$ <?= number_format($resumo['lucro']['totalDinheiro'], 2, ',', '.'); ?> 
+                  (<?= get_diff_percent($resumo['no_estoque']['totalVendaNoDinheiro'],$resumo['no_estoque']['totalCompra']); ?>)
+                </h5>
+                
                 <h5 style="text-align: right">Data do Relatório: <?php echo date('d/m/Y'); ?></h5>
             </div>
         </div>

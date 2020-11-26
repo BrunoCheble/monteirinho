@@ -25,21 +25,21 @@
                             </td>
                         </tr>
                         <tr>
-                            <td style="text-align: right"><strong>Unidade</strong></td>
-                            <td>
-                                <?php echo $result->unidade ?>
-                            </td>
-                        </tr>
-                        <tr>
                             <td style="text-align: right"><strong>Preço de Compra</strong></td>
                             <td>R$
-                                <?php echo $result->precoCompra; ?>
+                                <?php echo str_replace('.',',',$result->precoCompra); ?>
                             </td>
                         </tr>
                         <tr>
-                            <td style="text-align: right"><strong>Preço de Venda</strong></td>
+                            <td style="text-align: right"><strong>Preço de Venda no Cartão</strong></td>
                             <td>R$
-                                <?php echo $result->precoVenda; ?>
+                                <?php echo str_replace('.',',',$result->precoVenda); ?>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: right"><strong>Preço de Venda no Dinheiro</strong></td>
+                            <td>R$
+                                <?php echo str_replace('.',',',$result->precoVendaDinheiro); ?>
                             </td>
                         </tr>
                         <tr>
@@ -49,13 +49,18 @@
                             </td>
                         </tr>
                         <tr>
-                            <td style="text-align: right"><strong>Estoque Mínimo</strong></td>
+                            <td style="text-align: right"><strong>Mostruário</strong></td>
                             <td>
                                 <?php echo $result->estoqueMinimo; ?>
                             </td>
                         </tr>
                     </tbody>
                 </table>
+                <?php 
+                if($result->foto != '') {
+                    echo '<img src="'.$result->foto.'" width="100%" />';
+                }
+                ?>
             </div>
         </div>
     </div>

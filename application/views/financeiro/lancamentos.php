@@ -48,7 +48,7 @@ $periodo = $this->input->get('periodo');
 
 </div>
 
-<?php echo $this->pagination->create_links();  ?>
+<?php echo '';//$this->pagination->create_links();  ?>
 
 <!-- Modal nova receita -->
 <div id="modalReceita" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -117,7 +117,7 @@ $periodo = $this->input->get('periodo');
         </div>
         <div class="span4">
           <label for="vencimento">Data*</label>
-          <input class="span12 datepicker" type="text" name="data" />
+          <input class="span12 datepicker" autocomplete="off" type="text" name="data" />
         </div>
         <div class="span4">
           <label for="formaPgto">Forma Pgto</label>
@@ -164,27 +164,38 @@ $periodo = $this->input->get('periodo');
     <div class="modal-body">
       <div class="row-fluid">
         <div class="span6">
-          <label><i class="fas fa-calendar-day tip-top" title="Lançamentos com vencimento no período."></i> Data Início</label>
+          <label><i class="fas fa-calendar-day"></i> Data Início</label>
           <input name="data_inicio" class="span12 datepicker" value="<?= isset($data_inicio) ? $data_inicio : date('d/m/Y'); ?>" type="text">
         </div>
         <div class="span6">
-          <label><i class="fas fa-calendar-day tip-top" title="Lançamentos com vencimento no período."></i> Data Fim</label>
+          <label><i class="fas fa-calendar-day"></i> Data Fim</label>
           <input name="data_fim" class="span12 datepicker" value="<?= isset($data_fim) ? $data_fim : date('d/m/Y'); ?>" type="text">
         </div>
       </div>
         
-      <?php if ($this->session->userdata('permissao') != 2) : ?>
       <div class="row-fluid">
+      <?php if ($this->session->userdata('permissao') != 2) : ?>
         <div class="span6">
-          <label><i class="fas fa-store tip-top" title="Lançamentos com vencimento no período."></i> Loja</label>
+          <label><i class="fas fa-store" title="Loja"></i> Loja</label>
           <select name="loja" class="span12">
             <option value="0">Todas</option>
-            <option value="3">Austin</option>
-            <option value="2">Philomeno</option>
+            <option value="<?= getenv('loja_austin'); ?>">Austin</option>
+            <option value="<?= getenv('loja_philomeno'); ?>">Philomeno</option>
+          </select>
+        </div>
+      <?php endif; ?>
+        <div class="span6">
+          <label><i class="fas fa-credit-card"></i> Tipo de pagamento</label>
+          <select name="formaPgto" class="span12">
+              <option value="">Todos</option>
+              <option value="Dinheiro">Dinheiro</option>
+              <option value="Cartão de Crédito">Cartão de Crédito</option>
+              <option value="Boleto">Boleto</option>
+              <option value="Depósito">Depósito</option>
+              <option value="Débito">Débito</option>
           </select>
         </div>
       </div>
-      <?php endif; ?>
     </div>
     <div class="modal-footer">
       <button class="btn" data-dismiss="modal" aria-hidden="true" id="btnCancelarEditar">Cancelar</button>
@@ -192,21 +203,16 @@ $periodo = $this->input->get('periodo');
     </div>
   </form>
 </div>
-
-<!--
-
-      
-
-            -->
-
-
-
-
 <script src="<?php echo base_url() ?>assets/js/jquery.validate.js"></script>
 <script src="<?php echo base_url(); ?>assets/js/maskmoney.js"></script>
 <script type="text/javascript">
   jQuery(document).ready(function($) {
-
+    <?php if(isset($loja_filtrada)) : ?>
+    $('#modalFiltro [name="loja"]').val("<?= $loja_filtrada; ?>");
+    <?php endif; ?>
+    <?php if(isset($pagto_filtrado)) : ?>
+    $('#modalFiltro [name="formaPgto"]').val("<?= $pagto_filtrado; ?>");
+    <?php endif; ?>
     $('[name="urlAtual"]').val(location.href);
     <?php if($periodo) : ?>
     $('[name="periodo"]').val('<?= $periodo; ?>');
@@ -214,7 +220,7 @@ $periodo = $this->input->get('periodo');
     <?php if($situacao) : ?>
     $('[name="situacao"]').val('<?= $situacao; ?>');
     <?php endif; ?>
-    $(".money").maskMoney();
+      $(".money").maskMoney({prefix:'', allowNegative: true, thousands:'.', decimal:',', affixesStay: false});
 
     $('#pago').click(function(event) {
       var flag = $(this).is(':checked');
@@ -268,7 +274,13 @@ $periodo = $this->input->get('periodo');
         data: {
           required: 'Campo Requerido.'
         }
-      }
+      },
+      errorClass: "help-inline",
+      errorElement: "span",
+      highlight: function(element, errorClass, validClass) {
+          $('#loading').hide();
+          $(element).parents('.control-group').addClass('error');
+      },
     });
 
 
@@ -284,7 +296,6 @@ $periodo = $this->input->get('periodo');
         data: {
           required: true
         }
-
       },
       messages: {
         descricao: {
@@ -296,7 +307,13 @@ $periodo = $this->input->get('periodo');
         data: {
           required: 'Campo Requerido.'
         }
-      }
+      },
+      errorClass: "help-inline",
+      errorElement: "span",
+      highlight: function(element, errorClass, validClass) {
+          $('#loading').hide();
+          $(element).parents('.control-group').addClass('error');
+      },
     });
 
 
@@ -323,8 +340,14 @@ $periodo = $this->input->get('periodo');
         $("#pagoEditar").attr('checked', false);
         $("#divPagamentoEditar").hide();
       }
+    });
 
-
+    $("#fornecedor").autocomplete({
+        source: "<?php echo base_url(); ?>index.php/fornecedores/autoCompleteFornecedor",
+        minLength: 2,
+        select: function(event, ui) {
+            $("#fornecedor").val(ui.item.label);
+        }
     });
 
     $(document).on('click', '#btnExcluir', function(event) {
@@ -346,7 +369,7 @@ $periodo = $this->input->get('periodo');
             Swal.fire({
               type: "error",
               title: "Atenção",
-              text: "Ocorreu um erro ao tentar excluir produto."
+              text: "Ocorreu um erro ao tentar excluir o lançamento."
             });
           }
         }
@@ -358,5 +381,35 @@ $periodo = $this->input->get('periodo');
       dateFormat: 'dd/mm/yy'
     });
 
+    $('.table').DataTable({
+                language: {
+                    info: "Exibindo _START_ a _END_ de _TOTAL_ registos",
+                    zeroRecords: "Nenhum registos foi encontrado",
+                    lengthMenu: "Exibir _MENU_ registos por página",
+                    infoEmpty: "",
+                    infoFiltered: "(busca aplicada em _MAX_ registos)",
+                    search: "Buscar: ",
+                    paginate: {
+                        next: '&#8594;', // or '→'
+                        previous: '&#8592;' // or '←' 
+                    }
+                },
+                recordsTotal: 1000,
+                lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                dom: "Blfrtip",
+                buttons: [
+                    {
+                        extend: "print",
+                        text: 'Imprimir Relatório',
+                        exportOptions: {
+                            columns: [ 0, 1, 2, 3, 4, 5, 6, 7 ]
+                        },
+                        customize: function(win) {
+                            $(win.document.body).find('h1').text('Financeiro');
+                            $(win.document.body).append('<h3 style="text-align: right;">Saldo: '+$('#total-saldo').text()+'</h3>');
+                        }
+                    },
+                ]
+            });
   });
 </script>

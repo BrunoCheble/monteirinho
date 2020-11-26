@@ -8,11 +8,14 @@
                 </span>
                 <h5>Venda</h5>
                 <div class="buttons">
-                    <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eVenda')) {
-    echo '<a title="Editar Venda" class="btn btn-mini btn-info" href="' . base_url() . 'index.php/vendas/editar/' . $result->idVendas . '"><i class="fas fa-edit"></i> Editar</a>';
-} ?>
+                    <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'aAssistencia') && $result->cancelado == 0) { ?>
+                        <a title="Icon Title" class="btn btn-mini btn-primary" href="<?= base_url() . 'index.php/assistencias/adicionar/' . $result->idVendas; ?>"><i class="fas fa-wrench"></i> Nova assistência</a>
+                    <?php } ?>
+                    <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eVenda') && $result->cancelado == 0 && ($this->session->userdata('permissao') != 2 || $result->usuarios_id == $this->session->userdata('id'))) {
+                        echo '<a title="Editar Venda" class="btn btn-mini btn-info" href="' . base_url() . 'index.php/vendas/editar/' . $result->idVendas . '"><i class="fas fa-edit"></i> Editar</a>';
+                    } ?>
                     <a target="_blank" title="Imprimir" class="btn btn-mini btn-inverse" href="<?php echo site_url() ?>/vendas/imprimir/<?php echo $result->idVendas; ?>"><i class="fas fa-print"></i> Imprimir</a>
-                    <a target="_blank" title="Imprimir" class="btn btn-mini btn-inverse" href="<?php echo site_url() ?>/vendas/imprimirTermica/<?php echo $result->idVendas; ?>"><i class="fas fa-print"></i> Imprimir Não Fiscal</a>
+                    <!--<a target="_blank" title="Imprimir" class="btn btn-mini btn-inverse" href="<?php echo site_url() ?>/vendas/imprimirTermica/<?php echo $result->idVendas; ?>"><i class="fas fa-print"></i> Imprimir Não Fiscal</a>-->
                 </div>
             </div>
             <div class="invoice-content">
@@ -31,7 +34,16 @@
                                             </span></td>
                                             <td style="width: 18%; text-align: center; border-top: 0">
                                                 <h4>Nº <?php echo $result->idVendas ?></h4>
-                                            </br><span>Data Venda<br><?php echo date('d/m/Y',strtotime($result->dataVenda)); ?></span>
+                                                </br>
+                                                <span>Data Venda<br><?php echo date('d/m/Y',strtotime($result->dataVenda)); ?></span>
+                                                <?php if($result->faturado == 0) : ?>
+                                                </br>
+                                                <span class="label label-inverse">Não Faturado</span>
+                                                <?php endif; ?> 
+                                                <?php if($result->cancelado == 1) : ?>
+                                                </br>
+                                                <span class="label label-warning">VENDA CANCELADO</span>
+                                                <?php endif; ?> 
                                         </td>
                                     </tr>
                             </tbody>
@@ -44,12 +56,14 @@
                             <label><b>E-mail:</b> <?php echo $result->email ?></label>
                             <label><b>Contato:</b> <?php echo $result->telefone ?> - <?php echo $result->celular ?></label>
                             <label><b>Endereço:</b> <?php echo $result->rua ?>,
-                                <?php echo $result->numero ?>,
+                                <?php echo $result->numero ?> <?php echo $result->complemento ?>,
                                 <?php echo $result->bairro ?> - <?php echo $result->cidade ?> / <?php echo $result->estado ?>
                             </label>
+                            <?php echo $result->referenciaMorada ? '<label><b>Ponto de Referência:</b> '.$result->referenciaMorada.'</label>' : ''; ?>
                             <br>
+                            <?php echo $agendamento ? '<label><b>Data de Entrega:</b> '.date('d/m/Y',strtotime($agendamento->data)).'</label>' : '' ?>
                             <label><b>Observação:</b></label>
-                            <label>Entregar na parte da manhã;<br>Na portaria chamar por Bruno Azevedo</label>
+                            <label><?php echo nl2br($result->observacao) ?></label>
                         </div>
                     </div>
                     <div>
@@ -69,11 +83,12 @@
                                     <?php
                                         foreach ($produtos as $p) {
                                             $totalProdutos = $totalProdutos + $p->subTotal;
+                                            $precoUni = str_replace(',','',$p->preco);
                                             echo '<tr>';
                                             echo '<td>' . $p->descricao . '</td>';
                                             echo '<td style="text-align:center">' . $p->quantidade . '</td>';
                                             echo '<td>' . ($p->desconto ? $p->desconto.'%' : '') . '</td>';
-                                            echo '<td style="text-align:right">R$ ' . number_format($p->precoVenda, 2, ',', '.') . '</td>';
+                                            echo '<td style="text-align:right">R$ ' . number_format($precoUni, 2, ',', '.') . '</td>';
                                             echo '<td style="text-align:right">R$ ' . number_format($p->subTotal, 2, ',', '.') . '</td>';
                                             echo '</tr>';
                                         } ?>

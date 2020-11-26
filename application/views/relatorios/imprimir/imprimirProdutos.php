@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>MAPOS</title>
+    <title>PDV</title>
     <meta charset="UTF-8" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -13,45 +13,53 @@
     <link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/blue.css" class="skin-color" />
 </head>
 
-<body style="background-color: transparent">
+<body style="background-color: transparent; font-size:10px; line-height: 10px; margin: 0; padding:0;">
     <div class="container-fluid">
         <div class="row-fluid">
             <div class="span12">
                 <div class="widget-box">
-                    <?= $topo ?>
                     <div class="widget-title">
-                        <h4 style="text-align: center">Produtos</h4>
+                        <h4 style="text-align: center">Relatório de Produtos</h4>
                     </div>
                     <div class="widget-content nopadding">
                         <table class="table table-bordered">
                             <thead>
                                 <tr>
-                                    <th style="font-size: 1.2em; padding: 5px;">Nome</th>
-                                    <th style="font-size: 1.2em; padding: 5px;">UN</th>
-                                    <th style="font-size: 1.2em; padding: 5px;">Preço Compra</th>
-                                    <th style="font-size: 1.2em; padding: 5px;">Preço Venda</th>
-                                    <th style="font-size: 1.2em; padding: 5px;">Estoque</th>
+                                    <th style="font-size: 1em; padding: 5px;">Código</th>
+                                    <th style="font-size: 1em; padding: 5px;">Nome</th>
+                                    <th style="font-size: 1em; padding: 5px;">P. Venda Cartão</th>
+                                    <th style="font-size: 1em; padding: 5px;">P. Venda Dinheiro</th>
+                                    <th style="font-size: 1em; padding: 5px;">Qtt. Atual</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <?php
+                                    $totalQtt = 0;
+
                                     foreach ($produtos as $p) {
+                                        
+                                        $totalQtt += $p->estoque;
                                         echo '<tr>';
+                                        echo '<td>' . $p->codDeBarra . '</td>';
                                         echo '<td>' . $p->descricao . '</td>';
-                                        echo '<td>' . $p->unidade . '</td>';
-                                        echo '<td>' . $p->precoCompra . '</td>';
-                                        echo '<td>' . $p->precoVenda . '</td>';
-                                        echo '<td>' . $p->estoque . '</td>';
+                                        echo '<td>R$ '.number_format($p->precoVenda, 2, ',', '.') . '</td>';
+                                        echo '<td>R$ '.number_format($p->precoVendaDinheiro, 2, ',', '.') . '</td>';
+                                        echo '<td style="text-align: center">' . $p->estoque . '</td>';
                                         echo '</tr>';
                                     }
                                 ?>
                             </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td style="text-align: right; font-weight: bold" colspan="2"></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td style="text-align: center"><?= $totalQtt; ?></td>
+                                </tr>
+                            </tfoot>
                         </table>
                     </div>
                 </div>
-
-                <h5 style="text-align: right">Data do Relatório: <?php echo date('d/m/Y'); ?>
-                </h5>
             </div>
         </div>
     </div>

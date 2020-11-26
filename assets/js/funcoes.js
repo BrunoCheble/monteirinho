@@ -1,9 +1,22 @@
 $(function () {
     $("#celular").mask("(00)00000-0000")
-    $("#telefone").mask("(00)0000-0000")
     $("#cep").mask("00000-000")
     $('.cpfUser').mask('000.000.000-00', {reverse: true});
 
+});
+
+$(function () {
+    // INICIO FUNÇÃO DE MASCARA CPF/CNPJ
+    var telefoneMascara = function (val) {
+        return val.replace(/\D/g, '')[2] == 9 ? '(00)90000-0000' : '(00)0000-0000';
+    },
+        telOptions = {
+            onKeyPress: function (val, e, field, options) {
+                field.mask(telefoneMascara.apply({}, arguments), options);
+            }
+        };
+    $('#telefone').mask(telefoneMascara, telOptions);
+    // FIM FUNÇÃO DE MASCARA CPF/CNPJ
 });
 
 $(function () {
@@ -114,7 +127,7 @@ $(document).ready(function () {
 
         if (validarCNPJ(ndocumento)) {
             //Preenche os campos com "..." enquanto consulta webservice.
-            $("#nomeCliente").val("...");
+            $("#nomeFornecedor").val("...");
             $("#cep").val("...");
             $("#email").val("...");
             $("#numero").val("...");
@@ -130,7 +143,7 @@ $(document).ready(function () {
                 success: function (dados) {
                     if (dados.status == "OK") {
                         //Atualiza os campos com os valores da consulta.
-                        $("#nomeCliente").val(capital_letter(dados.nome));
+                        $("#nomeFornecedor").val(capital_letter(dados.nome));
                         $("#cep").val(dados.cep.replace(/\D/g, ''));
                         $("#email").val(dados.email.toLocaleLowerCase());
                         $("#numero").val(dados.numero);
@@ -139,11 +152,11 @@ $(document).ready(function () {
 
                         // Força uma atualizacao do endereco via cep
                         document.getElementById("cep").focus();
-                        document.getElementById("nomeCliente").focus();
+                        document.getElementById("nomeFornecedor").focus();
                     } //end if.
                     else {
                         //CEP pesquisado não foi encontrado.
-                        $("#nomeCliente").val("");
+                        $("#nomeFornecedor").val("");
                         $("#cep").val("");
                         $("#email").val("");
                         $("#numero").val("");
@@ -159,7 +172,7 @@ $(document).ready(function () {
                 },
                 error: function() {
                     ///CEP pesquisado não foi encontrado.
-                    $("#nomeCliente").val("");
+                    $("#nomeFornecedor").val("");
                     $("#cep").val("");
                     $("#email").val("");
                     $("#numero").val("");

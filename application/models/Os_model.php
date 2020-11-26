@@ -163,13 +163,13 @@ class Os_model extends CI_Model
     public function autoCompleteProduto($q)
     {
         $this->db->select('*');
-        $this->db->limit(5);
+        $this->db->limit(15);
         $this->db->like('codDeBarra', $q);
         $this->db->or_like('descricao', $q);
         $query = $this->db->get('produtos');
         if ($query->num_rows() > 0) {
             foreach ($query->result_array() as $row) {
-                $row_set[] = ['label' => $row['descricao'] . ' | Preço: R$ ' . $row['precoVenda'] . ' | Estoque: ' . $row['estoque'], 'estoque' => $row['estoque'], 'id' => $row['idProdutos'], 'preco' => $row['precoVenda']];
+                $row_set[] = ['label' => $row['descricao'] . ' | Preço: R$ ' . $row['precoVenda'] . ' | Estoque: ' . $row['estoque'], 'estoque' => $row['estoque'], 'id' => $row['idProdutos'], 'preco' => str_replace('.',',',$row['precoVenda'])];
             }
             echo json_encode($row_set);
         }
@@ -178,14 +178,14 @@ class Os_model extends CI_Model
     public function autoCompleteProdutoSaida($q)
     {
         $this->db->select('*');
-        $this->db->limit(5);
+        $this->db->limit(15);
         $this->db->like('codDeBarra', $q);
         $this->db->or_like('descricao', $q);
         $this->db->where('saida', 1);
         $query = $this->db->get('produtos');
         if ($query->num_rows() > 0) {
             foreach ($query->result_array() as $row) {
-                $row_set[] = ['label' => $row['descricao'] . ' | Preço: R$ ' . $row['precoVenda'] . ' | Estoque: ' . $row['estoque'], 'estoque' => $row['estoque'], 'id' => $row['idProdutos'], 'preco' => $row['precoVenda']];
+                $row_set[] = ['label' => $row['descricao'] . ' | Preço: R$ ' . $row['precoVenda'] . ' | Estoque: ' . $row['estoque'], 'estoque' => $row['estoque'], 'id' => $row['idProdutos'], 'preco' => str_replace('.',',',$row['precoVenda']), 'preco_dinheiro' => str_replace('.',',',$row['precoVendaDinheiro'])];
             }
             echo json_encode($row_set);
         }
@@ -194,7 +194,7 @@ class Os_model extends CI_Model
     public function autoCompleteCliente($q)
     {
         $this->db->select('*');
-        $this->db->limit(5);
+        $this->db->limit(10);
         $this->db->like('nomeCliente', $q);
         $query = $this->db->get('clientes');
         if ($query->num_rows() > 0) {
@@ -208,7 +208,7 @@ class Os_model extends CI_Model
     public function autoCompleteUsuario($q)
     {
         $this->db->select('*');
-        $this->db->limit(5);
+        $this->db->limit(10);
         $this->db->like('nome', $q);
         $this->db->where('situacao', 1);
         $query = $this->db->get('usuarios');
@@ -223,7 +223,7 @@ class Os_model extends CI_Model
     public function autoCompleteTermoGarantia($q)
     {
         $this->db->select('*');
-        $this->db->limit(5);
+        $this->db->limit(10);
         $this->db->like('LOWER(refGarantia)', $q);
         $query = $this->db->get('garantias');
         if ($query->num_rows() > 0) {
@@ -237,7 +237,7 @@ class Os_model extends CI_Model
     public function autoCompleteServico($q)
     {
         $this->db->select('*');
-        $this->db->limit(5);
+        $this->db->limit(15);
         $this->db->like('nome', $q);
         $query = $this->db->get('servicos');
         if ($query->num_rows() > 0) {

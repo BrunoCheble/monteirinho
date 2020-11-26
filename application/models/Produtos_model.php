@@ -80,4 +80,9 @@ class Produtos_model extends CI_Model
         $sql = "UPDATE produtos set estoque = estoque $operacao ? WHERE idProdutos = ?";
         return $this->db->query($sql, [$quantidade, $produto]);
     }
+
+    public function jaVendido($idProduto) {
+        $encontrou = $this->db->where(['produtos_id' => $idProduto])->get('itens_de_vendas');
+        return $encontrou->num_rows() > 0;
+    }
 }

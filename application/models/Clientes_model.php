@@ -32,6 +32,8 @@ class Clientes_model extends CI_Model
 
     public function getById($id)
     {
+        $this->db->select('clientes.*, usuarios.emitente_id');
+        $this->db->join('usuarios', 'usuarios.idUsuarios = clientes.cadastradoPor');
         $this->db->where('idClientes', $id);
         $this->db->limit(1);
         return $this->db->get('clientes')->row();
@@ -150,5 +152,10 @@ class Clientes_model extends CI_Model
             return false;
         }
         return true;
+    }
+    
+    public function jaVendido($idCliente) {
+        $encontrou = $this->db->where(['clientes_id' => $idCliente])->get('vendas');
+        return $encontrou->num_rows() > 0;
     }
 }

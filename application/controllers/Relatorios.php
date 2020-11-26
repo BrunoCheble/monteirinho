@@ -90,19 +90,19 @@ class Relatorios extends MY_Controller
     }
 
     public function produtosRapid()
-    {
-        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'rProduto')) {
-            $this->session->set_flashdata('error', 'Você não tem permissão para gerar relatórios de produtos.');
+    {        
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'vProduto')) {
+            $this->session->set_flashdata('error', 'Você não tem permissão para imprimir relatórios de produtos.');
             redirect(base_url());
         }
 
         $data['produtos'] = $this->Relatorios_model->produtosRapid();
-        $data['emitente'] = $this->Mapos_model->getEmitente();
-        $data['title'] = 'Relatório de Produtos';
-        $data['topo'] = $this->load->view('relatorios/imprimir/imprimirTopo', $data, true);
-
+        
         $this->load->helper('mpdf');
-        $html = $this->load->view('relatorios/imprimir/imprimirProdutos', $data, true);
+        
+        $view = $this->permission->checkPermission($this->session->userdata('permissao'), 'aProduto') ? 'imprimirProdutosByAdmin' : 'imprimirProdutos';
+
+        $html = $this->load->view('relatorios/imprimir/'.$view, $data, true);
         pdf_create($html, 'relatorio_produtos' . date('d/m/y'), true);
     }
 
@@ -370,6 +370,10 @@ class Relatorios extends MY_Controller
     
     public function produtosEstoque()
     {
+        if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'aProduto')) {
+            $this->session->set_flashdata('error', 'Você não tem permissão para imprimir relatórios de estoque.');
+            redirect(base_url());
+        }
         $data['produtos'] = $this->Relatorios_model->produtosEstoque();
         $this->load->helper('mpdf');
         $html = $this->load->view('relatorios/imprimir/imprimirEstoque', $data, true);

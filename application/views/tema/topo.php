@@ -57,6 +57,7 @@
 </head>
 
 <body>
+    <div id="loading" style="z-index: 99999999999; background: #000; width: 100%; display: none; height: 100vh; opacity: .8; position: fixed; text-align: center;"></div>
   <!--Header-part-->
   <div id="header">
     <h1><a href=""> <?= $configuration['app_name'] ?: 'Monteirinho' ?> </a></h1>
@@ -73,18 +74,18 @@
       <li class="dropdown">
         <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fas fa-user-cog"></i> <?= $this->session->userdata('nome') ?> <b class="caret"></b></a>
         <ul class="dropdown-menu">
-          <li class=""><a title="Meu Perfil" href="<?= site_url('mapos/minhaConta'); ?>"><i class="fas fa-user"></i> <span class="text">Meu Perfil</span></a></li>
+          <li class=""><a title="Alterar Senha" href="<?= site_url('mapos/minhaConta'); ?>"><i class="fas fa-key"></i> <span class="text">Alterar Senha</span></a></li>
           <li class="divider"></li>
           <li class=""><a title="Sair do Sistema" href="<?= site_url('login/sair'); ?>"><i class="fas fa-sign-out-alt"></i> <span class="text">Sair do Sistema</span></a></li>
         </ul>
       </li>
     </ul>
   </div>
-  <!--start-top-serch-->
+  <!--start-top-serch
   <div id="search">
     <form action="<?= site_url('mapos/pesquisar') ?>">
       <input type="text" name="termo" placeholder="Pesquisar..." />
       <button type="submit" class="tip-bottom" title="Pesquisar"><i class="fas fa-search fa-white"></i></button>
     </form>
-  </div>
+  </div>-->
   <!--close-top-serch-->

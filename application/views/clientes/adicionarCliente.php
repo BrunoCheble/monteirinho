@@ -17,7 +17,7 @@
 } ?>
                 <form action="<?php echo current_url(); ?>" id="formCliente" method="post" class="form-horizontal">
                   <div class="control-group">
-                      <label for="documento" class="control-label">CPF/CNPJ<span class="required">*</span></label>
+                      <label for="documento" class="control-label">CPF/CNPJ</label>
                       <div class="controls">
                           <input id="documento" class="cpfcnpj" type="text" name="documento" value="<?php echo set_value('documento'); ?>"  />
                           <button style="display:none" id="buscar_info_cnpj" class="btn btn-xs" type="button">Buscar Informações (CNPJ)</button>
@@ -50,13 +50,13 @@
                     </div>
 
                     <div class="control-group">
-                        <label for="email" class="control-label">Email<span class="required">*</span></label>
+                        <label for="email" class="control-label">Email</label>
                         <div class="controls">
                             <input id="email" type="text" name="email" value="<?php echo set_value('email'); ?>" />
                         </div>
                     </div>
                     <div class="control-group" class="control-label">
-                        <label for="cep" class="control-label">CEP<span class="required">*</span></label>
+                        <label for="cep" class="control-label">CEP</label>
                         <div class="controls">
                             <input id="cep" type="text" name="cep" value="<?php echo set_value('cep'); ?>" />
                         </div>
@@ -77,6 +77,13 @@
                         <label for="complemento" class="control-label">Complemento</label>
                         <div class="controls">
                             <input id="complemento" type="text" name="complemento" value="<?php echo set_value('complemento'); ?>" />
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label for="referenciaMorada" class="control-label">Ponto de Referência</label>
+                        <div class="controls">
+                            <input id="referenciaMorada" type="text" name="referenciaMorada" value="<?php echo set_value('referenciaMorada'); ?>" />
                         </div>
                     </div>
 
@@ -126,13 +133,7 @@
                 nomeCliente: {
                     required: true
                 },
-                documento: {
-                    required: true
-                },
                 telefone: {
-                    required: true
-                },
-                email: {
                     required: true
                 },
                 rua: {
@@ -150,9 +151,6 @@
                 estado: {
                     required: true
                 },
-                cep: {
-                    required: true
-                }
             },
             messages: {
                 nomeCliente: {
@@ -164,9 +162,6 @@
                 telefone: {
                     required: 'Campo Requerido.'
                 },
-                email: {
-                    required: 'Campo Requerido.'
-                },
                 rua: {
                     required: 'Campo Requerido.'
                 },
@@ -182,15 +177,13 @@
                 estado: {
                     required: 'Campo Requerido.'
                 },
-                cep: {
-                    required: 'Campo Requerido.'
-                }
 
             },
 
             errorClass: "help-inline",
             errorElement: "span",
             highlight: function(element, errorClass, validClass) {
+                $('#loading').hide();
                 $(element).parents('.control-group').addClass('error');
             },
             unhighlight: function(element, errorClass, validClass) {

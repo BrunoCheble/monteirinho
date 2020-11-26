@@ -1,31 +1,29 @@
-<?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'aFornecedor')) { ?>
-    <a href="<?php echo base_url(); ?>index.php/fornecedores/adicionar" class="btn btn-success"><i class="fas fa-plus"></i> Adicionar Fornecedor</a>
+<?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'aAssistencia')) { ?>
+    <a href="<?php echo base_url(); ?>index.php/assistencias/adicionar" class="btn btn-success"><i class="fas fa-plus"></i> Adicionar Assistências</a>
 <?php } ?>
 
 <div class="widget-box">
     <div class="widget-title">
-        <span class="icon">
-            <i class="fas fa-industry"></i>
-        </span>
-        <h5>Fornecedores</h5>
+        <span class="icon"><i class="fas fa-wrench"></i></span>
+        <h5>Assistências</h5>
     </div>
 
     <div class="widget-content nopadding">
-        <?= $table_fornecedores; ?>
+        <?= $table_assistencias; ?>
     </div>
 </div>
 
 
 <!-- Modal -->
 <div id="modal-excluir" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <form action="<?php echo base_url() ?>index.php/fornecedores/excluir" method="post">
+    <form action="<?php echo base_url() ?>index.php/assistencias/excluir" method="post">
         <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-            <h5 id="myModalLabel">Excluir Fornecedor</h5>
+            <h5 id="myModalLabel">Excluir Assistencia</h5>
         </div>
         <div class="modal-body">
-            <input type="hidden" id="idFornecedor" name="id" value="" />
-            <h5 style="text-align: center">Deseja realmente excluir este Fornecedor e os dados associados a ele ?</h5>
+            <input type="hidden" id="idAssistencia" name="id" value="" />
+            <h5 style="text-align: center">Deseja realmente excluir esta Assistencia ?</h5>
         </div>
         <div class="modal-footer">
             <button class="btn" data-dismiss="modal" aria-hidden="true">Cancelar</button>
@@ -37,8 +35,8 @@
 <script type="text/javascript">
     $(document).ready(function() {
         $(document).on('click', 'a', function(event) {
-            var Fornecedor = $(this).attr('Fornecedor');
-            $('#idFornecedor').val(Fornecedor);
+            var Assistencia = $(this).attr('Assistencia');
+            $('#idAssistencia').val(Assistencia);
         });
         
         $('.table').DataTable({
@@ -63,7 +61,7 @@
                             columns: [ 0, 1, 2, 3, 4 ]
                         },
                         customize: function(win) {
-                            $(win.document.body).find('h1').text('Fornecedores');
+                            $(win.document.body).find('h1').text('Assistencias');
                         }
                     },
                 ]

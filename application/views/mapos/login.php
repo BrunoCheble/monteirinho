@@ -59,23 +59,25 @@ defined('BASEPATH') OR exit('No direct script access allowed'); //Loading url he
 </head>
 
 <body style="background-color: #666666;">
+<div id="loading" style="z-index: 99999999999; background: #000; width: 100%; display: none; height: 100vh; opacity: .8; position: fixed; text-align: center;"></div>
+ 
   <div class="limiter">
     <div class="container-login100">
       <div class="wrap-login100">
-        <form class="login100-form validate-form" id="formLogin">
+        <form class="login100-form" id="formLogin">
         <span class="login100-form-title p-b-43">
           <img style="max-width: 190px;" src="<?= base_url() ?>assets/img/logo.png" />
         </span>
 
         <div id="message" style="display:none" class="alert alert-danger"></div>
-        <div class="wrap-input100 validate-input" data-validate="Usuário obrigatório">
-          <input class="input100" id="email" type="text" name="email">
+        <div class="wrap-input100">
+          <input class="input100" name="email" id="email" type="text" >
           <span class="focus-input100"></span>
           <span class="label-input100">Usuário</span>
         </div>
 
-        <div class="wrap-input100 validate-input" data-validate="Senha obrigatória">
-          <input class="input100" name="senha" type="password" name="password">
+        <div class="wrap-input100">
+          <input class="input100" name="senha" type="password" id="password">
           <span class="focus-input100"></span>
           <span class="label-input100">Senha</span>
         </div>
@@ -106,26 +108,20 @@ defined('BASEPATH') OR exit('No direct script access allowed'); //Loading url he
 
       $('#email').focus();
 
-      var get_notify = function (type, text, pos_event = function () { alert('ok'); }) {
-
-        var title = '';
-
-        if (type == 'success') {
-            title = 'Sucesso!';
-        } else if (type == 'error') {
-            title = 'Erro!';
-        } else if (type == 'info') {
-            title = 'Informação';
-        } else if (type == 'warning') {
-            title = 'Atenção';
-        }
-
-
-        }
-
       $("#formLogin").submit(function(e) {
-          e.preventDefault();
-          var dados = $(this).serializeArray();
+        e.preventDefault();
+        var dados = $(this).serializeArray();
+        
+        if($('#password').val().trim() == '' || $('#email').val().trim() == '') {
+          new PNotify({
+              title: 'Usuário e senha são obrigatórios',
+              type: 'error',
+              styling: 'bootstrap3',
+          });
+          return false;
+        }
+        
+        $('#loading').show();
         $.ajax({
             type: "POST",
             url: "<?= site_url('login/verificarLogin?ajax=true'); ?>",
@@ -133,11 +129,12 @@ defined('BASEPATH') OR exit('No direct script access allowed'); //Loading url he
             dataType: 'json',
             success: function (data) {
                 if (data.result == true) {
-                window.location.href = "<?= site_url('mapos'); ?>";
+                window.location.href = "<?= site_url('agendamentos'); ?>";
                 } else {
 
-                    $('#btn-acessar').removeClass('disabled');
+                    $('#btn-acessar').removeAttr('disabled');
                     
+                    $('#loading').hide();
                     var data = {
                         title: 'Erro na autenticação',
                         text: data.message || 'Os dados de acesso estão incorretos, por favor tente novamente!',
@@ -151,46 +148,6 @@ defined('BASEPATH') OR exit('No direct script access allowed'); //Loading url he
         });
         return false;
       });
-        /*
-      $("#formLogin").validate({
-        rules: {
-          email: {
-            required: true,
-            email: true
-          },
-          senha: {
-            required: true
-          }
-        },
-        messages: {
-          email: {
-            required: 'Campo Requerido.',
-            email: 'Insira Email válido'
-          },
-          senha: {
-            required: 'Campo Requerido.'
-          }
-        },
-        submitHandler: function (form) {
-          var dados = $(form).serialize();
-          $('#btn-acessar').addClass('disabled');
-
-          
-
-          return false;
-        },
-
-        errorClass: "help-inline",
-        errorElement: "span",
-        highlight: function (element, errorClass, validClass) {
-          //$(element).parents('.control-group').addClass('error');
-        },
-        unhighlight: function (element, errorClass, validClass) {
-        //  $(element).parents('.control-group').removeClass('error');
-        //  $(element).parents('.control-group').addClass('success');
-        }
-      });
-      */
     });
   </script>
 </body>

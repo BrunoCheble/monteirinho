@@ -19,6 +19,7 @@ class Mapos extends MY_Controller
 
     public function index()
     {
+        return redirect('agendamentos');
         $this->data['ordens'] = $this->mapos_model->getOsAbertas();
         $this->data['ordens1'] = $this->mapos_model->getOsAguardandoPecas();
         $this->data['produtos'] = $this->mapos_model->getProdutosMinimo();
@@ -80,11 +81,12 @@ class Mapos extends MY_Controller
 
     public function backup()
     {
+        /*
         if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'cBackup')) {
             $this->session->set_flashdata('error', 'Você não tem permissão para efetuar backup.');
             redirect(base_url());
         }
-
+        */
         $this->load->dbutil();
         $prefs = [
             'format' => 'zip',
@@ -95,12 +97,13 @@ class Mapos extends MY_Controller
         $backup = $this->dbutil->backup($prefs);
 
         $this->load->helper('file');
-        write_file(base_url() . 'backup/backup.zip', $backup);
+        write_file(FCPATH . 'assets/uploads/bkp/'.date('YmdHis').'-'.uniqid().'.zip', $backup);
 
         log_info('Efetuou backup do banco de dados.');
-
+        /*
         $this->load->helper('download');
         force_download('backup' . date('d-m-Y H:m:s') . '.zip', $backup);
+        */
     }
 
     public function emitente()

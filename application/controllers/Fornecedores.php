@@ -166,7 +166,8 @@ class Fornecedores extends MY_Controller
         redirect(site_url('fornecedores/gerenciar/'));
     }
 
-    public function get_table() {
+    public function get_table() 
+    {
         $fornecedores = $this->fornecedores_model->get('fornecedores', '*', '', 1000, 0);
 
         foreach ($fornecedores as $Fornecedor) {
@@ -195,5 +196,14 @@ class Fornecedores extends MY_Controller
         $this->table->set_template(['table_open' => '<table class="table table-bordered">']);
         $this->table->set_heading('Cod.','Nome', 'CPF/CNPJ','Telefone','Email','Ações');
         return $this->table->generate();
+    }
+
+    public function autoCompleteFornecedor()
+    {
+        if (isset($_GET['term'])) {
+            $q = strtolower($_GET['term']);
+            $this->fornecedores_model->autoCompleteFornecedor($q);
+        }
+        die;
     }
 }

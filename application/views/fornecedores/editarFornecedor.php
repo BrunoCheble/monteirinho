@@ -50,13 +50,13 @@
                         </div>
                     </div>
                     <div class="control-group">
-                        <label for="email" class="control-label">Email<span class="required">*</span></label>
+                        <label for="email" class="control-label">Email</label>
                         <div class="controls">
                             <input id="email" type="text" name="email" value="<?php echo $result->email; ?>" />
                         </div>
                     </div>
                     <div class="control-group" class="control-label">
-                        <label for="cep" class="control-label">CEP<span class="required">*</span></label>
+                        <label for="cep" class="control-label">CEP</label>
                         <div class="controls">
                             <input id="cep" type="text" name="cep" value="<?php echo $result->cep; ?>" />
                         </div>
@@ -130,9 +130,6 @@
                 telefone: {
                     required: true
                 },
-                email: {
-                    required: true
-                },
                 rua: {
                     required: true
                 },
@@ -148,9 +145,6 @@
                 estado: {
                     required: true
                 },
-                cep: {
-                    required: true
-                }
             },
             messages: {
                 nomeFornecedor: {
@@ -162,9 +156,6 @@
                 telefone: {
                     required: 'Campo Requerido.'
                 },
-                email: {
-                    required: 'Campo Requerido.'
-                },
                 rua: {
                     required: 'Campo Requerido.'
                 },
@@ -180,15 +171,13 @@
                 estado: {
                     required: 'Campo Requerido.'
                 },
-                cep: {
-                    required: 'Campo Requerido.'
-                }
 
             },
 
             errorClass: "help-inline",
             errorElement: "span",
             highlight: function(element, errorClass, validClass) {
+                $('#loading').hide();
                 $(element).parents('.control-group').addClass('error');
             },
             unhighlight: function(element, errorClass, validClass) {

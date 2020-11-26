@@ -94,6 +94,7 @@
             errorClass: "help-inline",
             errorElement: "span",
             highlight: function(element, errorClass, validClass) {
+                $('#loading').hide();
                 $(element).parents('.control-group').addClass('error');
             },
             unhighlight: function(element, errorClass, validClass) {

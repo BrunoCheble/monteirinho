@@ -9,7 +9,7 @@
                 <span class="icon">
                     <i class="fas fa-industry"></i>
                 </span>
-                <h5>Editar Fornecedor</h5>
+                <h5>Editar Agendamento</h5>
             </div>
             <div class="widget-content nopadding">
                 <?php if ($custom_error != '') {
@@ -19,7 +19,7 @@
                   
                     <?php echo form_hidden('idAgendamentos', $result->idAgendamentos) ?>
                   <div class="row-fluid">
-                      <div class="span8">
+                      <div class="span6">
                           <div class="control-group">
                               <label for="tituloAgendamento" class="control-label">Título<span class="required">*</span></label>
                               <div class="controls">
@@ -37,9 +37,17 @@
                       </div>
                       <div class="span2">
                           <div class="control-group">
-                              <label for="dataAgendamento" class="control-label">Nº da Venda</label>
+                              <label for="" class="control-label">Nº da Venda</label>
                               <div class="controls">
-                                  <input class="span12" id="vendas_id" type="text" name="vendas_id" value="<?php echo $result->vendas_id; ?>" />
+                                  <input class="span12" type="text" disabled value="<?php echo $result->vendas_id; ?>" />
+                              </div>
+                          </div>
+                      </div>
+                      <div class="span2">
+                          <div class="control-group">
+                              <label for="" class="control-label">Nº da Assis.</label>
+                              <div class="controls">
+                                  <input class="span12" type="text" disabled value="<?php echo $result->assistencias_id; ?>" />
                               </div>
                           </div>
                       </div>

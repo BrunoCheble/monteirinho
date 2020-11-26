@@ -43,11 +43,10 @@
         <p id="descricao"></p>
     </div>
     <div class="modal-footer">
-      <button class="btn pull-left" data-dismiss="modal" aria-hidden="true">Fechar</button>
-      <a href="#modal-excluir" data-dismiss="modal" role="button" data-toggle="modal" class="btn btn-danger" title="" data-original-title="Excluir Agendamento"><i class="fas fa-trash-alt"></i> Excluir</a>
-
-      <a href="" id="btnVenda" class="btn btn-primary"><i class="fas fa-store"></i> Detalhes da Venda</a>
-      <a href="" id="btnEditar" class="btn btn-warning"><i class="fas fa-edit"></i> Editar Agendamento</a>
+      <a href="#modal-excluir" data-dismiss="modal" role="button" data-toggle="modal" class="btn btn-danger pull-left" title="" data-original-title="Excluir Agendamento"><i class="fas fa-trash-alt"></i><br>Excluir</a>
+      <a href="" id="btnAssistencia" class="btn btn-info"><i class="fas fa-wrench"></i><br>Ver Assistência</a>
+      <a href="" id="btnVenda" class="btn btn-primary"><i class="fas fa-store"></i><br>Ver Venda</a>
+      <a href="" id="btnEditar" class="btn btn-warning"><i class="fas fa-edit"></i><br>Editar Agendamento</a>
     </div>
 </div>
 
@@ -127,7 +126,7 @@
                     header: {
                         left: 'prev,next today',
                         center: 'title',
-                        right: 'Label agendaWeek,month, AddAgendamentoBtn'
+                        right: 'Label agendaWeek,month AddAgendamentoBtn'
                     },
                     displayEventTime: false,
                     editable: true,
@@ -163,12 +162,35 @@
                     },
                     events: $request_events,
                     eventClick: function (event) {
-                        $('#modalAgendamento #btnEditar').attr('href',base_url+'/index.php/agendamentos/editar/'+event.id);
-                        $('#modalAgendamento #btnVenda').attr('href',base_url+'/index.php/vendas/visualizar/'+event.vendas_id);
+                        
                         $('#modalAgendamento #titulo').text(event.title);
-                        $('#modalAgendamento #descricao').text(event.description);
+                        $('#modalAgendamento #descricao').html(event.description);
                         $('#idAgendamento').val(event.id);
+
+                        $('.modal-footer a').hide();
+                        $('#modalAgendamento #btnVenda').hide();
+                        $('#modalAgendamento #btnEditar').hide();
+                        $('#modalAgendamento #btnAssistencia').hide();
                         $('#modalAgendamento').modal('show');
+
+                        if(!event.pode_alterar) {
+                            return;
+                        }
+
+                        if(event.vendas_id != null) {
+                            $('#modalAgendamento #btnVenda').attr('href',base_url+'index.php/vendas/visualizar/'+event.vendas_id);
+                            $('#modalAgendamento #btnVenda').show();
+                        }
+                        
+                        if(event.pode_alterar) {
+                            $('#modalAgendamento #btnEditar').attr('href',base_url+'index.php/agendamentos/editar/'+event.id);
+                        }
+
+                        if(event.assistencias_id != null && event.pode_alterar) {
+                            $('#modalAgendamento #btnAssistencia').attr('href',base_url+'index.php/assistencias/editar/'+event.assistencias_id);
+                            $('#modalAgendamento #btnAssistencia').show();
+                        }
+                        $('.modal-footer a').show();
                     }
                 });
             }

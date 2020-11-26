@@ -4,6 +4,7 @@ class Agendamentos_model extends CI_Model
     public function __construct()
     {
         parent::__construct();
+        $this->load->model(['assistencias_model','vendas_model']);
     }
 
     public function get($table, $fields, $where = '', $perpage = 0, $start = 0, $one = false, $array = 'array')
@@ -68,7 +69,54 @@ class Agendamentos_model extends CI_Model
     }
 
     public function getByIntervalosDatas($start, $end) {
-        $query = $this->db->query('select * from agendamentos where data BETWEEN ? AND ? order by data, idAgendamentos',[$start, $end]);
+        
+        $condition = 'data BETWEEN ? AND ?';
+        if($this->session->userdata('permissao') == 2) {
+            $condition .= ' AND u.emitente_id='.$this->session->userdata('loja');
+        }
+        $query = $this->db->query('SELECT a.* FROM agendamentos a JOIN usuarios u ON u.idUsuarios = a.cadastradoPor WHERE '.$condition.' ORDER BY data, idAgendamentos',[$start, $end]);
+        
+        //$query = $this->db->query('select * from agendamentos where data BETWEEN ? AND ? order by data, idAgendamentos',[$start, $end]);
         return $query->result();
+    }
+
+    public function clearDates($id) {
+        $agendamento = $this->getById($id);
+        if(!empty($agendamento->assistencias_id)) {
+            return $this->assistencias_model->edit(
+                'assistencias',
+                ['data_visita' => null],
+                'idAssistencias',
+                $agendamento->assistencias_id
+            );
+        }
+        else if(!empty($agendamento->vendas_id)) {
+            return $this->vendas_model->edit(
+                'vendas',
+                ['dataEntrega' => null],
+                'idVendas',
+                $agendamento->vendas_id
+            );
+        }
+    }
+
+    public function editDates($id) {
+        $agendamento = $this->getById($id);
+        if(!empty($agendamento->assistencias_id)) {
+            return $this->assistencias_model->edit(
+                'assistencias',
+                ['data_visita' => $agendamento->data],
+                'idAssistencias',
+                $agendamento->assistencias_id
+            );
+        }
+        else if(!empty($agendamento->vendas_id)) {
+            return $this->vendas_model->edit(
+                'vendas',
+                ['dataEntrega' => $agendamento->data],
+                'idVendas',
+                $agendamento->vendas_id
+            );
+        }
     }
 }

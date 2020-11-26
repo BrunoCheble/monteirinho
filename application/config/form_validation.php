@@ -10,7 +10,7 @@ $config = [
         [
             'field' => 'documento',
             'label' => 'CPF/CNPJ',
-            'rules' => 'required|trim|verific_cpf_cnpj',
+            'rules' => 'trim|verific_cpf_cnpj',
             'errors' => [
                 'verific_cpf_cnpj' => "O campo %s não é um CPF ou CNPJ válido."
             ],
@@ -23,7 +23,7 @@ $config = [
         [
             'field' => 'email',
             'label' => 'Email',
-            'rules' => 'required|trim|valid_email',
+            'rules' => 'trim|valid_email',
         ],
         [
             'field' => 'rua',
@@ -53,7 +53,7 @@ $config = [
         [
             'field' => 'cep',
             'label' => 'CEP',
-            'rules' => 'required|trim',
+            'rules' => 'trim',
         ]
     ],
     'fornecedores' => [
@@ -78,7 +78,7 @@ $config = [
         [
             'field' => 'email',
             'label' => 'Email',
-            'rules' => 'required|trim|valid_email',
+            'rules' => 'trim|valid_email',
         ],
         [
             'field' => 'rua',
@@ -157,9 +157,9 @@ $config = [
             'rules' => 'required|trim',
         ],
         [
-            'field' => 'unidade',
-            'label' => 'Unidade',
-            'rules' => 'required|trim',
+            'field' => 'ncm',
+            'label' => '',
+            'rules' => 'trim',
         ],
         [
             'field' => 'precoCompra',
@@ -168,7 +168,12 @@ $config = [
         ],
         [
             'field' => 'precoVenda',
-            'label' => 'Preço de Venda',
+            'label' => 'Preço de Venda no Cartão',
+            'rules' => 'required|trim',
+        ],
+        [
+            'field' => 'precoVendaDinheiro',
+            'label' => 'Preço de Venda no Dinheiro',
             'rules' => 'required|trim',
         ],
         [
@@ -180,6 +185,14 @@ $config = [
             'field' => 'estoqueMinimo',
             'label' => 'Estoque Minimo',
             'rules' => 'trim',
+        ],
+        [
+            'field' => 'numParcelas',
+            'label' => 'Número de Parcelas',
+            'rules' => 'trim|numeric',
+            'errors' => [
+                'numeric' => 'Por favor digite apenas número.'
+            ],
         ]
     ],
     'usuarios' => [
@@ -336,7 +349,7 @@ $config = [
             'rules' => 'required|trim',
         ],
         [
-            'field' => 'recebimento',
+            'field' => 'data',
             'label' => 'Data',
             'rules' => 'required|trim',
         ],
@@ -358,7 +371,7 @@ $config = [
             'rules' => 'required|trim',
         ],
         [
-            'field' => 'recebimento',
+            'field' => 'data',
             'label' => 'Data',
             'rules' => 'required|trim',
         ],
@@ -371,6 +384,28 @@ $config = [
             'field' => 'tipo',
             'label' => 'Tipo',
             'rules' => 'required|trim',
+        ]
+    ],
+    'assistencias' => [
+        [
+            'field' => 'vendas_id',
+            'label' => 'Nº Venda',
+            'rules' => 'required|trim',
+        ],
+        [
+            'field' => 'descricao_problema',
+            'label' => 'descricao_problema',
+            'rules' => 'required|trim',
+        ],
+        [
+            'field' => 'descricao_tecnico',
+            'label' => 'Descrição do montador',
+            'rules' => 'trim',
+        ],
+        [
+            'field' => 'data_visita',
+            'label' => 'Data Visita',
+            'rules' => 'trim',
         ]
     ],
     'garantias' => [
@@ -427,6 +462,21 @@ $config = [
             'field' => 'dataVenda',
             'label' => 'Data da Venda',
             'rules' => 'required|trim',
+        ],
+        [
+            'field' => 'clientes_id',
+            'label' => 'clientes',
+            'rules' => 'trim|required',
+        ],
+        [
+            'field' => 'dataEntrega',
+            'label' => 'Data da Entrega',
+            'rules' => 'trim',
+        ],
+        [
+            'field' => 'observacao',
+            'label' => 'Observação',
+            'rules' => 'trim|max_length[1000]',
         ],
         [
             'field' => 'clientes_id',

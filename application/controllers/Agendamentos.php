@@ -94,7 +94,6 @@ class Agendamentos extends MY_Controller
             $this->data['custom_error'] = (validation_errors() ? '<div class="form_error">' . validation_errors() . '</div>' : false);
         } else {
             $date = explode('/',set_value('data'));
-
             $data = [
                 'titulo' => set_value('titulo'),
                 'descricao' => set_value('descricao'),
@@ -103,10 +102,8 @@ class Agendamentos extends MY_Controller
                 'dataAtualizacao' => date('Y-m-d H:i:s')
             ];
 
-            if(set_value('vendas_id')) {
-                $data['vendas_id'] = set_value('vendas_id');
-            }
             if ($this->agendamentos_model->edit('agendamentos', $data, 'idAgendamentos', $this->input->post('idAgendamentos')) == true) {
+                $this->agendamentos_model->editDates($this->input->post('idAgendamentos'));
                 $this->session->set_flashdata('success', 'Agendamento editado com sucesso!');
                 log_info('Alterou um Agendamento. ID' . $this->input->post('idAgendamentos'));
                 redirect(site_url('agendamentos/editar/') . $this->input->post('idAgendamentos'));
@@ -152,6 +149,7 @@ class Agendamentos extends MY_Controller
             redirect(site_url('agendamentos/gerenciar/'));
         }
 
+        $this->agendamentos_model->clearDates($id);
         $this->agendamentos_model->delete('agendamentos', 'idAgendamentos', $id);
         log_info('Removeu um Agendamento. ID' . $id);
 
@@ -182,12 +180,15 @@ class Agendamentos extends MY_Controller
             $eventos[] = [
                 'id' => $agendamento->idAgendamentos,
                 'title' => $agendamento->titulo,
-                'description' => $agendamento->descricao,
+                'description' => nl2br($agendamento->descricao),
                 'vendas_id' => $agendamento->vendas_id,
+                'assistencias_id' => $agendamento->assistencias_id,
                 'start' => $start,
                 'end' => $end,
+                'color' => !empty($agendamento->assistencias_id) ? '#009688' : '#ca0000',
                 'draggable' => 0,
-                'resizable' => 0
+                'resizable' => 0,
+                'pode_alterar' => $agendamento->cadastradoPor == $this->session->userdata('id') || $this->session->userdata('permissao') != 2
             ];
         }
         

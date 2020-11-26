@@ -56,7 +56,7 @@
 // define('ENVIRONMENT', isset($_SERVER['CI_ENV']) ? $_SERVER['CI_ENV'] : 'development');
 
 //set the environment to production after installation
-define('ENVIRONMENT', 'production');
+define('ENVIRONMENT', 'development');
 // we don't want to access the main project before installation. redirect to installation page
 if (ENVIRONMENT === 'pre_installation') {
     $domain = $_SERVER['HTTP_HOST'] . $_SERVER['SCRIPT_NAME'];
@@ -84,11 +84,25 @@ switch (ENVIRONMENT) {
     case 'development':
         error_reporting(-1);
         ini_set('display_errors', 1);
+        putenv("base_url=http://localhost:85/monteirinho/");
+        putenv("database=monteirinho");
+        putenv("hostname=monteirinho.mysql.dbaas.com.br");
+        putenv("username=monteirinho");
+        putenv("password=Apm757896@");
+        putenv("loja_austin=1");
+        putenv("loja_philomeno=2");
         break;
 
     case 'testing':
     case 'production':
         ini_set('display_errors', 0);
+        putenv("base_url=http://monteirinho.com.br/");
+        putenv("database=monteirinho");
+        putenv("hostname=monteirinho.mysql.dbaas.com.br");
+        putenv("username=monteirinho");
+        putenv("password=Apm757896@");
+        putenv("loja_austin=1");
+        putenv("loja_philomeno=2");
         if (version_compare(PHP_VERSION, '5.3', '>=')) {
             error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED & ~E_STRICT & ~E_USER_NOTICE & ~E_USER_DEPRECATED);
         } else {

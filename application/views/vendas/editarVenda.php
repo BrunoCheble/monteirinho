@@ -22,6 +22,8 @@
                                 <form action="<?php echo current_url(); ?>" method="post" id="formVendas">
                                     <?php echo form_hidden('idVendas', $result->idVendas) ?>
                                     <?php echo form_hidden('usuarios_id', $result->usuarios_id) ?>
+                                    <?php echo form_hidden('dataEntrega', $result->dataEntrega) ?>
+                                    <?php echo form_hidden('observacao', $result->observacao) ?>
                                     
                                     <div class="span12" style="padding: 1%; margin-left: 0">
                                         <h3 style="text-align:center; margin:0;">Nº da Venda:
@@ -29,7 +31,7 @@
                                         </h3>
                                         <div class="span2" style="margin-left: 0">
                                             <label for="dataFinal">Data Venda</label>
-                                            <input id="dataVenda" class="span12 datepicker" <?= $result->faturado ? 'disabled': '' ?> type="text" name="dataVenda" value="<?php echo date('d/m/Y', strtotime($result->dataVenda)); ?>" />
+                                            <input id="dataVenda" class="span12 " <?= $result->faturado ? 'readonly': 'datepicker' ?> type="text" name="dataVenda" value="<?php echo date('d/m/Y', strtotime($result->dataVenda)); ?>" />
                                         </div>
                                         <div class="span5">
                                             <label for="cliente">Cliente<span class="required">*</span></label>
@@ -38,12 +40,7 @@
                                             <input id="valorTotal" type="hidden" name="valorTotal" value="" />
                                         </div>
                                         <div class="span5" style="text-align: right;">
-                                            <?php if ($result->faturado == 0) : ?>
-                                                <a href="#modal-faturar" id="btn-faturar" role="button" data-toggle="modal" class="btn btn-success"><i class="fas fa-cash-register"></i><br>Faturar</a>
-                                            <?php
-                                            else : ?>
-                                                <button disabled class="btn btn-success"><i class="fas fa-cash-register"></i><br>Faturado</button>
-                                            <?php endif; ?>
+                                            <a href="<?php echo base_url() ?>index.php/vendas/visualizar/<?php echo $result->idVendas; ?>" class="btn btn-info"><i class="fas fa-eye"></i><br>Visualizar</a>
                                             <button class="btn btn-primary" id="btnContinuar"><i class="fas fa-sync-alt"></i><br>Atualizar</button>
                                             <a href="<?php echo base_url() ?>index.php/vendas" class="btn"><i class="fas fa-backward"></i><br>Voltar</a>
                                         </div>
@@ -61,20 +58,27 @@
                                         </div>
                                         <div class="span2">
                                             <label for="">Preço</label>
-                                            <input type="text" placeholder="Preço" id="preco" name="preco" class="span12 money" />
+                                            <select id="preco" id="preco" name="preco" autocomplete="off" class="span12 money"></select>
+                                            <!--
+                                            <input type="text" placeholder="Preço" id="preco" name="preco" autocomplete="off" class="span12 money" />
+                                            -->
                                         </div>
                                         <div class="span2">
                                             <label for="">Desconto</label>
                                             <select class="span12" name="desconto" id="desconto">
                                                 <option>0%</option>
+                                                <option value="2.5">2,5%</option>
+                                                <option value="3">3%</option>
                                                 <option value="5">5%</option>
                                                 <option value="10">10%</option>
                                                 <option value="15">15%</option>
+                                                <option value="20">20%</option>
+                                                <option value="50">50%</option>
                                             </select>
                                         </div>
                                         <div class="span2">
                                             <label for="">Quantidade</label>
-                                            <input type="text" placeholder="Quantidade" id="quantidade" name="quantidade" class="span12" />
+                                            <input type="text" placeholder="Quantidade" onkeypress="return isNumber(event)" autocomplete="off" id="quantidade" name="quantidade" class="span12" />
                                         </div>
                                         <div class="span2">
                                             <label for="">&nbsp</label>
@@ -120,13 +124,28 @@
                                 </div>
                                 <div style="padding: 1%; margin-left: 0">
                                     <div class="span2">
-                                        <label for="dataFinal">Data Entrega</label>
-                                        <input id="dataVenda" class="span12 datepicker" type="text" name="dataVenda" value="<?php echo date('d/m/Y', strtotime($result->dataVenda)); ?>" />
+                                        <label for="dataEntrega">Data Entrega</label>
+                                        <input id="dataEntrega" class="span12 datepicker" type="text" value="<?php echo $result->dataEntrega ? date('d/m/Y', strtotime($result->dataEntrega)) : null; ?>" />
                                     </div>
                                     <div class="span10">
                                         <label for="observacao">Obrservação do Pedido</label>
-                                        <textarea name="observacao" class="span12"></textarea>
+                                        <textarea id="observacao" class="span12"><?php echo $result->observacao; ?></textarea>
                                     </div>
+                                </div>
+                                <div style="padding: 1%; margin-left: 0;">
+                                    <?php if ($result->faturado == 0) : ?>
+                                        <a href="#modal-faturar" id="btn-faturar" role="button" data-toggle="modal" class="btn btn-success"><i class="fas fa-cash-register"></i> Faturar</a>
+                                    <?php
+                                    else : ?>
+                                        <button id="reabrir_venda" class="btn btn-warning"><i class="fas fa-cash-register"></i> Reabrir e excluir Faturamentos</button>
+                                    <?php endif; ?>
+
+                                    <?php if ($result->cancelado == 0) : ?>
+                                        <button id="cancelar_venda" class="btn btn-danger pull-right"><i class="fas fa-times"></i> Cancelar Venda</button>
+                                    <?php
+                                    else : ?>
+                                        <button disabled class="btn btn-danger pull-right"><i class="fas fa-times"></i> Cancelado</button>
+                                    <?php endif; ?>
                                 </div>
                             </div>
                         </div>
@@ -163,36 +182,22 @@
                 <div class="span4" style="margin-left: 0">
                     <label for="valor">Valor*</label>
                     <input type="hidden" id="tipo" name="tipo" value="receita" />
-                    <input class="span12 money" id="valor" type="text" name="valor" value="<?php echo number_format($total, 2); ?> " />
+                    <input class="span12 money" id="valor" type="text" name="valor" value="" />
                 </div>
                 <div class="span4">
-                    <label for="recebimento">Data Recebimento</label>
-                    <input class="span12 datepicker" value="<?php echo date('d/m/Y', strtotime($result->dataVenda)); ?>" autocomplete="off" id="recebimento" type="text" name="recebimento" />
-                </div>
-                <div class="span4" style="display:none">
-                    <label for="vencimento">Data Vencimento*</label>
-                    <input class="span12 datepicker" value="<?php echo date('d/m/Y', strtotime($result->dataVenda)); ?>" autocomplete="off" id="vencimento" type="text" name="vencimento" />
+                    <label for="data">Data Recebimento</label>
+                    <input class="span12 datepicker" value="<?php echo date('d/m/Y'); ?>" autocomplete="off" id="recebimento" type="text" name="data" />
                 </div>
                 <div id="divRecebimento" class="span4">
-                    <div class="span6">
-                        <label for="formaPgto">Forma Pgto</label>
-                        <select name="formaPgto" id="formaPgto" class="span12">
-                            <option value="Dinheiro">Dinheiro</option>
-                            <option value="Cartão de Crédito">Cartão de Crédito</option>
-                            <option value="Cheque">Cheque</option>
-                            <option value="Boleto">Boleto</option>
-                            <option value="Depósito">Depósito</option>
-                            <option value="Débito">Débito</option>
-                        </select>
-                    </div>
+                    <label for="formaPgto">Forma Pgto</label>
+                    <select name="formaPgto" id="formaPgto" class="span12">
+                        <option value="Dinheiro">Dinheiro</option>
+                        <option value="Cartão de Crédito">Cartão de Crédito</option>
+                        <option value="Boleto">Boleto</option>
+                        <option value="Depósito">Depósito</option>
+                        <option value="Débito">Débito</option>
+                    </select>
                 </div>
-            </div>
-            <div class="span12" style="margin-left: 0">
-                <div class="span4" style="margin-left: 0">
-                    <label for="recebido">Recebido?</label>
-                    &nbsp &nbsp &nbsp &nbsp<input id="recebido" checked type="checkbox" name="recebido" value="1" />
-                </div>
-                
             </div>
         </div>
         <div class="modal-footer">
@@ -205,7 +210,43 @@
 <script src="<?php echo base_url(); ?>assets/js/maskmoney.js"></script>
 <script type="text/javascript">
     $(document).ready(function() {
-        $(".money").maskMoney();
+        $(".money").maskMoney({prefix:'', allowNegative: true, thousands:'.', decimal:',', affixesStay: false});
+
+        $('#dataEntrega').change(function(){
+            $('#formVendas [name="dataEntrega"]').val($(this).val());
+        });
+        
+        $('#observacao').change(function(){
+            $('#formVendas [name="observacao"]').val($(this).val());
+        });
+
+        $('#observacao, #dataEntrega').change();
+        
+        $('#cancelar_venda').click(function(){
+            $.ajax({
+                type: "POST",
+                url: "<?php echo base_url(); ?>index.php/vendas/cancelarVenda",
+                data: {
+                    vendas_id: "<?php echo $result->idVendas; ?>"
+                },
+                success: function() {
+                    window.location.reload(true);
+                }
+            });
+        });
+        $('#reabrir_venda').click(function(){
+            $.ajax({
+                type: "POST",
+                url: "<?php echo base_url(); ?>index.php/vendas/reabrirVenda",
+                data: {
+                    vendas_id: "<?php echo $result->idVendas; ?>"
+                },
+                success: function() {
+                    window.location.reload(true);
+                }
+            });
+        });
+
         $('#recebido').click(function(event) {
             var flag = $(this).is(':checked');
             if (flag == true) {
@@ -216,9 +257,21 @@
         });
         $(document).on('click', '#btn-faturar', function(event) {
             event.preventDefault();
-            valor = $('#total-venda').val();
-            valor = valor.replace(',', '');
-            $('#valor').val(valor);
+            $.ajax({
+                type: "POST",
+                url: "<?php echo base_url(); ?>index.php/vendas/calcularValorPendente",
+                data: {
+                    vendas_id: "<?php echo $result->idVendas; ?>"
+                },
+                dataType: 'json',
+                success: function(data) {
+                    if (data.result == true) {
+                        $('#formFaturar #valor').val(data.pending_value);
+                    } else {
+                        window.location.reload(true);
+                    }
+                }
+            });
         });
         $("#formFaturar").validate({
             rules: {
@@ -252,6 +305,7 @@
             submitHandler: function(form) {
                 var dados = $(form).serialize();
                 $('#btn-cancelar-faturar').trigger('click');
+                $('#loading').show();
                 $.ajax({
                     type: "POST",
                     url: "<?php echo base_url(); ?>index.php/vendas/faturar",
@@ -261,6 +315,7 @@
                         if (data.result == true) {
                             window.location.reload(true);
                         } else {
+                            $('#loading').hide();
                             Swal.fire({
                                 type: "error",
                                 title: "Atenção",
@@ -279,7 +334,9 @@
             select: function(event, ui) {
                 $("#idProduto").val(ui.item.id);
                 $("#estoque").val(ui.item.estoque);
-                $("#preco").val(ui.item.preco);
+                $("#preco").html('');
+                $("#preco").append('<option value="'+ui.item.preco+'">'+ui.item.preco+'</option>');
+                $("#preco").append('<option value="'+ui.item.preco_dinheiro+'">'+ui.item.preco_dinheiro+'</option>');
                 $("#quantidade").focus();
             }
         });
@@ -323,6 +380,7 @@
             errorClass: "help-inline",
             errorElement: "span",
             highlight: function(element, errorClass, validClass) {
+                $('#loading').hide();
                 $(element).parents('.control-group').addClass('error');
             },
             unhighlight: function(element, errorClass, validClass) {
@@ -341,10 +399,14 @@
                     required: 'Insira a quantidade'
                 }
             },
+            highlight: function(element, errorClass, validClass) {
+                $('#loading').hide();
+            },
             submitHandler: function(form) {
                 var quantidade = parseInt($("#quantidade").val());
                 var estoque = parseInt($("#estoque").val());
-
+                $('#loading').hide();
+                    
                 <?php if (!$configuration['control_estoque']) {
                                                 echo 'estoque = 1000000';
                                             }; ?>
@@ -367,7 +429,7 @@
                             if (data.result == true) {
                                 $("#divProdutos").load("<?php echo current_url(); ?> #divProdutos");
                                 $("#quantidade").val('');
-                                $("#preco").val('');
+                                $("#preco").html('');
                                 $("#produto").val('').focus();
                             } else {
                                 Swal.fire({
@@ -391,7 +453,7 @@
                 $.ajax({
                     type: "POST",
                     url: "<?php echo base_url(); ?>index.php/vendas/excluirProduto",
-                    data: "idProduto=" + idProduto + "&quantidade=" + quantidade + "&produto=" + produto,
+                    data: "idProduto=" + idProduto + "&quantidade=" + quantidade + "&produto=" + produto + "&idVenda=<?= $result->idVendas ?>",
                     dataType: 'json',
                     success: function(data) {
                         if (data.result == true) {

@@ -42,12 +42,13 @@
                         <label for="codDeBarra" class="control-label">Código<span class=""></span></label>
                         <div class="controls">
                             <input id="codDeBarra" type="text" name="codDeBarra" value="<?php echo $result->codDeBarra; ?>" />
+                            <input id="ncm" type="text" placeholder="NCM" name="ncm" value="<?php echo $result->ncm; ?>" />
                         </div>
                     </div>
                     <div class="control-group">
                         <label for="descricao" class="control-label">Descrição<span class="required">*</span></label>
                         <div class="controls">
-                            <input id="descricao" style="width: 300px;" type="text" name="descricao" value="<?php echo $result->descricao; ?>" />
+                            <input id="descricao" class="span8" type="text" name="descricao" value="<?php echo $result->descricao; ?>" />
                         </div>
                     </div>
 
@@ -68,42 +69,42 @@
                     <div class="control-group">
                         <label for="precoCompra" class="control-label">Preço de Compra<span class="required">*</span></label>
                         <div class="controls">
-                            <input id="precoCompra" class="money" type="text" name="precoCompra" value="<?php echo $result->precoCompra; ?>" />
+                            <input id="precoCompra" class="money" type="text" name="precoCompra" value="<?php echo str_replace([',','.'],['',','],$result->precoCompra); ?>" />
                         </div>
                     </div>
 
                     <div class="control-group">
-                        <label for="precoVenda" class="control-label">Preço de Venda<span class="required">*</span></label>
+                        <label for="precoVenda" class="control-label">P.V. no Cartão<span class="required">*</span></label>
                         <div class="controls">
-                            <input id="precoVenda" class="money" type="text" name="precoVenda" value="<?php echo $result->precoVenda; ?>" />
+                            <input id="precoVenda" class="money" type="text" name="precoVenda" value="<?php echo str_replace([',','.'],['',','],$result->precoVenda); ?>" />
+                            <input id="numParcelas" style="margin-left: 10px" type="text" placeholder="Nº de Parcelas" name="numParcelas" value="<?php echo $result->numParcelas; ?>" />
                         </div>
                     </div>
 
                     <div class="control-group">
-                        <label for="unidade" class="control-label">Unidade<span class="required">*</span></label>
+                        <label for="precoVendaDinheiro" class="control-label">P.V. no Dinheiro<span class="required">*</span></label>
                         <div class="controls">
-                            <select id="unidade" name="unidade">
-                                <option value="UN" <?= ($result->unidade == 'UN') ? 'selected' : '' ?>>Unidade</option>
-                                <option value="KG" <?= ($result->unidade == 'KG') ? 'selected' : '' ?>>Kilograma</option>
-                                <option value="LT" <?= ($result->unidade == 'LT') ? 'selected' : '' ?>>Litro</option>
-                                <option value="CX" <?= ($result->unidade == 'CX') ? 'selected' : '' ?>>Caixa</option>
-                                <option value="M2" <?= ($result->unidade == 'M2') ? 'selected' : '' ?>>M²</option>
-                                <option value="OT" <?= ($result->unidade == 'OT') ? 'selected' : '' ?>>Outro</option>
-                            </select>
+                            <input id="precoVendaDinheiro" class="money" type="text" name="precoVendaDinheiro" value="<?php echo str_replace([',','.'],['',','],$result->precoVendaDinheiro); ?>" />
                         </div>
                     </div>
 
                     <div class="control-group">
                         <label for="estoque" class="control-label">Estoque<span class="required">*</span></label>
                         <div class="controls">
-                            <input id="estoque" type="text" name="estoque" value="<?php echo $result->estoque; ?>" />
+                            <input id="estoque" onkeypress="return isNumber(event)" type="text" name="estoque" value="<?php echo $result->estoque; ?>" />
                         </div>
                     </div>
 
                     <div class="control-group">
-                        <label for="estoqueMinimo" class="control-label">Estoque Mínimo</label>
+                        <label for="estoqueMinimo" class="control-label">Mostruário</label>
                         <div class="controls">
-                            <input id="estoqueMinimo" type="text" name="estoqueMinimo" value="<?php echo $result->estoqueMinimo; ?>" />
+                            <input id="estoqueMinimo" onkeypress="return isNumber(event)" type="text" name="estoqueMinimo" value="<?php echo $result->estoqueMinimo; ?>" />
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label for="foto" class="control-label">Link da foto</label>
+                        <div class="controls">
+                            <input id="foto" class="span8" type="text" name="foto" value="<?php echo $result->foto; ?>" />
                         </div>
                     </div>
 
@@ -129,20 +130,20 @@
 <script src="<?php echo base_url(); ?>assets/js/maskmoney.js"></script>
 <script type="text/javascript">
     $(document).ready(function() {
-        $(".money").maskMoney();
+        $(".money").maskMoney({prefix:'', allowNegative: true, thousands:'.', decimal:',', affixesStay: false});
 
         $('#formProduto').validate({
             rules: {
                 descricao: {
                     required: true
                 },
-                unidade: {
-                    required: true
-                },
                 precoCompra: {
                     required: true
                 },
                 precoVenda: {
+                    required: true
+                },
+                precoVendaDinheiro: {
                     required: true
                 },
                 estoque: {
@@ -153,13 +154,13 @@
                 descricao: {
                     required: 'Campo Requerido.'
                 },
-                unidade: {
-                    required: 'Campo Requerido.'
-                },
                 precoCompra: {
                     required: 'Campo Requerido.'
                 },
                 precoVenda: {
+                    required: 'Campo Requerido.'
+                },
+                precoVendaDinheiro: {
                     required: 'Campo Requerido.'
                 },
                 estoque: {
@@ -170,6 +171,7 @@
             errorClass: "help-inline",
             errorElement: "span",
             highlight: function(element, errorClass, validClass) {
+                $('#loading').hide();
                 $(element).parents('.control-group').addClass('error');
             },
             unhighlight: function(element, errorClass, validClass) {

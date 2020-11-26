@@ -41,12 +41,13 @@
                         <label for="codDeBarra" class="control-label">Código<span class=""></span></label>
                         <div class="controls">
                             <input id="codDeBarra" type="text" name="codDeBarra" value="<?php echo set_value('codDeBarra'); ?>" />
+                            <input id="ncm" type="text" placeholder="NCM" name="ncm" value="<?php echo set_value('ncm'); ?>" />
                         </div>
                     </div>
                     <div class="control-group">
                         <label for="descricao" class="control-label">Descrição<span class="required">*</span></label>
                         <div class="controls">
-                            <input id="descricao" style="width: 300px;" type="text" name="descricao" value="<?php echo set_value('descricao'); ?>" />
+                            <input id="descricao" class="span8" type="text" name="descricao" value="<?php echo set_value('descricao'); ?>" />
                         </div>
                     </div>
                     <div class="control-group">
@@ -69,35 +70,34 @@
                         </div>
                     </div>
                     <div class="control-group">
-                        <label for="precoVenda" class="control-label">Preço de Venda<span class="required">*</span></label>
+                        <label for="precoVenda" class="control-label">P.V. no Cartão<span class="required">*</span></label>
                         <div class="controls">
                             <input id="precoVenda" class="money" type="text" name="precoVenda" value="<?php echo set_value('precoVenda'); ?>" />
+                            <input id="numParcelas" type="text" placeholder="Nº de Parcelas" name="numParcelas" value="<?php echo set_value('numParcelas'); ?>" />
                         </div>
                     </div>
-                    <div style="display:none" class="control-group">
-                        <label for="unidade" class="control-label">Unidade<span class="required">*</span></label>
+                    <div class="control-group">
+                        <label for="precoVenda" class="control-label">P.V. no Dinheiro<span class="required">*</span></label>
                         <div class="controls">
-                            <!--<input id="unidade" type="text" name="unidade" value="<?php echo set_value('unidade'); ?>"  />-->
-                            <select id="unidade" name="unidade">
-                                <option selected value="UN">Unidade</option>
-                                <option value="KG">Kilograma</option>
-                                <option value="LT">Litro</option>
-                                <option value="CX">Caixa</option>
-                                <option value="M2">M²</option>
-                                <option value="OT">Outro</option>
-                            </select>
+                            <input id="precoVendaDinheiro" class="money" type="text" name="precoVendaDinheiro" value="<?php echo set_value('precoVendaDinheiro'); ?>" />
                         </div>
                     </div>
                     <div class="control-group">
                         <label for="estoque" class="control-label">Estoque<span class="required">*</span></label>
                         <div class="controls">
-                            <input id="estoque" type="text" name="estoque" value="<?php echo set_value('estoque'); ?>" />
+                            <input id="estoque" onkeypress="return isNumber(event)" type="text" name="estoque" value="<?php echo set_value('estoque'); ?>" />
                         </div>
                     </div>
                     <div class="control-group">
-                        <label for="estoqueMinimo" class="control-label">Estoque Mínimo</label>
+                        <label for="estoqueMinimo" class="control-label">Mostruário</label>
                         <div class="controls">
-                            <input id="estoqueMinimo" type="text" name="estoqueMinimo" value="<?php echo set_value('estoqueMinimo'); ?>" />
+                            <input id="estoqueMinimo" onkeypress="return isNumber(event)" type="text" name="estoqueMinimo" value="<?php echo set_value('estoqueMinimo'); ?>" />
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label for="foto" class="control-label">Link da foto</label>
+                        <div class="controls">
+                            <input id="foto" class="span8" type="text" name="foto" value="<?php echo set_value('foto'); ?>" />
                         </div>
                     </div>
                     <div class="form-actions">
@@ -117,7 +117,7 @@
 <script src="<?php echo base_url(); ?>assets/js/maskmoney.js"></script>
 <script type="text/javascript">
     $(document).ready(function() {
-        $(".money").maskMoney();
+        $(".money").maskMoney({prefix:'', allowNegative: true, thousands:'.', decimal:',', affixesStay: false});
         $('#formProduto').validate({
             rules: {
                 descricao: {
@@ -130,6 +130,9 @@
                     required: true
                 },
                 precoVenda: {
+                    required: true
+                },
+                precoVendaDinheiro: {
                     required: true
                 },
                 estoque: {
@@ -149,6 +152,9 @@
                 precoVenda: {
                     required: 'Campo Requerido.'
                 },
+                precoVendaDinheiro: {
+                    required: 'Campo Requerido.'
+                },
                 estoque: {
                     required: 'Campo Requerido.'
                 }
@@ -156,6 +162,7 @@
             errorClass: "help-inline",
             errorElement: "span",
             highlight: function(element, errorClass, validClass) {
+                $('#loading').hide();
                 $(element).parents('.control-group').addClass('error');
             },
             unhighlight: function(element, errorClass, validClass) {

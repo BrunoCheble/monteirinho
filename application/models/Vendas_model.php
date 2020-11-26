@@ -19,7 +19,7 @@ class Vendas_model extends CI_Model
     
     public function get($table, $fields, $where = '', $perpage = 0, $start = 0, $one = false, $array = 'array')
     {
-        $this->db->select($fields.', clientes.nomeCliente, clientes.idClientes, usuarios.nome as usuario');
+        $this->db->select($fields.', clientes.nomeCliente, clientes.idClientes, usuarios.nome as usuario, usuarios.emitente_id as id_loja');
         $this->db->from($table);
         $this->db->limit($perpage, $start);
         $this->db->join('clientes', 'clientes.idClientes = '.$table.'.clientes_id');
@@ -37,11 +37,19 @@ class Vendas_model extends CI_Model
 
     public function getById($id)
     {
-        $this->db->select('vendas.*, clientes.*, clientes.email as emailCliente, lancamentos.data_vencimento, clientes.telefone, clientes.celular, clientes.email, clientes.documento, usuarios.emitente_id');
+        $this->db->select("
+            vendas.*, 
+            clientes.*, 
+            clientes.email as emailCliente, 
+            clientes.telefone, 
+            clientes.celular, 
+            clientes.email, 
+            clientes.documento, 
+            usuarios.emitente_id
+        ");
         $this->db->from('vendas');
         $this->db->join('clientes', 'clientes.idClientes = vendas.clientes_id');
         $this->db->join('usuarios', 'usuarios.idUsuarios = vendas.usuarios_id');
-        $this->db->join('lancamentos', 'vendas.idVendas = lancamentos.vendas_id', 'LEFT');
         $this->db->where('vendas.idVendas', $id);
         $this->db->limit(1);
         return $this->db->get()->row();
@@ -55,7 +63,6 @@ class Vendas_model extends CI_Model
         $this->db->where('vendas_id', $id);
         return $this->db->get()->result();
     }
-
     
     public function add($table, $data, $returnId = false)
     {
@@ -101,12 +108,12 @@ class Vendas_model extends CI_Model
     public function autoCompleteProduto($q)
     {
         $this->db->select('*');
-        $this->db->limit(5);
+        $this->db->limit(10);
         $this->db->like('descricao', $q);
         $query = $this->db->get('produtos');
         if ($query->num_rows() > 0) {
             foreach ($query->result_array() as $row) {
-                $row_set[] = ['label'=>$row['descricao'].' | Preço: R$ '.$row['precoVenda'].' | Estoque: '.$row['estoque'],'estoque'=>$row['estoque'],'id'=>$row['idProdutos'],'preco'=>$row['precoVenda']];
+                $row_set[] = ['label'=>$row['descricao'].' | Preço: R$ '.$row['precoVenda'].' | Estoque: '.$row['estoque'],'estoque'=>$row['estoque'],'id'=>$row['idProdutos'],'preco'=>str_replace('.',',',$row['precoVenda'])];
             }
             echo json_encode($row_set);
         }
@@ -115,8 +122,9 @@ class Vendas_model extends CI_Model
     public function autoCompleteCliente($q)
     {
         $this->db->select('*');
-        $this->db->limit(5);
+        $this->db->limit(10);
         $this->db->like('nomeCliente', $q);
+        $this->db->or_like('documento', $q);
         $query = $this->db->get('clientes');
         if ($query->num_rows() > 0) {
             foreach ($query->result_array() as $row) {
@@ -129,7 +137,7 @@ class Vendas_model extends CI_Model
     public function autoCompleteUsuario($q)
     {
         $this->db->select('*');
-        $this->db->limit(5);
+        $this->db->limit(10);
         $this->db->like('nome', $q);
         $this->db->where('situacao', 1);
         $query = $this->db->get('usuarios');
@@ -144,10 +152,62 @@ class Vendas_model extends CI_Model
     public function updateTotalVenda($venda_id) {
         $totalProdutos = $this->db->select('SUM(subTotal) as total')->where('vendas_id', $venda_id)->get('itens_de_vendas');
         if($totalProdutos->num_rows() == 1) {
-            $this->db->set('valorTotal', $totalProdutos->row()->total);
+            $total = $totalProdutos->row()->total;
+            $this->db->set('valorTotal', number_format($total,2,'.',''));
             $this->db->where('idVendas', $venda_id);
             $this->db->update('vendas');
         }
+    }
+
+    public function saveAgendamento($vendas_id) 
+    {
+        $this->load->model('agendamentos_model');
+
+        $venda = $this->getById($vendas_id);
+        $agendamento = $this->agendamentos_model->get('agendamentos', 'idAgendamentos', ['vendas_id' => $vendas_id, 'assistencias_id' => null], 1, 0, true);
+
+        if(empty($venda->dataEntrega) && empty($agendamento)) {
+            return true;
+        }
+        else if(empty($agendamento)) {
+            return $this->agendamentos_model->add('agendamentos',[
+                'titulo' => 'V. '.$vendas_id.' - '.$venda->nomeCliente,
+                'data' => $venda->dataEntrega,
+                'descricao' => !empty($venda->observacao) ? $venda->observacao : !empty($venda->referenciaMorada) ? $venda->referenciaMorada : '-',
+                'vendas_id' => $vendas_id,
+                'cadastradoPor' => $this->session->userdata('id'),
+                'dataCadastro' => date('Y-m-d H:i:s')
+            ]);   
+        }
+        else if(empty($venda->dataEntrega)) {
+            return $this->agendamentos_model->delete('agendamentos','idAgendamentos', $agendamento->idAgendamentos);
+        }
+        else {
+            return $this->agendamentos_model->edit('agendamentos',[
+                'titulo' => 'V. '.$vendas_id.' - '.$venda->nomeCliente,
+                'data' => $venda->dataEntrega,
+                'descricao' => !empty($venda->observacao) ? $venda->observacao : !empty($venda->referenciaMorada) ? $venda->referenciaMorada : '-',
+                'atualizadoPor' => $this->session->userdata('id'),
+                'dataAtualizacao' => date('Y-m-d H:i:s')
+            ], 'idAgendamentos', $agendamento->idAgendamentos);  
+        }
+    }
+
+    public function calculatePendingValueByVendasID($vendas_id)
+    {
+        $this->db->select("valorTotal");
+        $this->db->where('idVendas', $vendas_id);
+        $venda = $this->db->get('vendas')->row();
+
+        if(empty($venda->valorTotal) || $venda->valorTotal < 0) {
+            return 0;
+        }
+        
+        $this->db->select("sum(valor) as valorPago");
+        $this->db->where('vendas_id', $vendas_id);
+        $lancamento = $this->db->get('lancamentos')->row();
+
+        return $lancamento->valorPago > 0 ? floatval($venda->valorTotal)-floatval($lancamento->valorPago) : $venda->valorTotal;
     }
 }
 

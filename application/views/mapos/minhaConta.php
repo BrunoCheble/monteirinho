@@ -1,3 +1,4 @@
+<!--
 <div class="span6" style="margin-left: 0">
     <div class="widget-box">
         <div class="widget-title">
@@ -27,7 +28,7 @@
         </div>
     </div>
 </div>
-
+-->
 <div class="span6">
     <div class="widget-box">
         <div class="widget-title">

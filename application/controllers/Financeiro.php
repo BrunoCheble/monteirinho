@@ -63,7 +63,7 @@ class Financeiro extends MY_Controller
         if ($this->form_validation->run('receita') == false) {
             $this->data['custom_error'] = (validation_errors() ? '<div class="form_error">' . validation_errors() . '</div>' : false);
         } else {
-            $recebimento = $this->input->post('recebimento');
+            $recebimento = $this->input->post('data');
 
             try {
                 $recebimento = explode('/', $recebimento);
@@ -74,10 +74,7 @@ class Financeiro extends MY_Controller
             }
 
             $valor = $this->input->post('valor');
-
-            if (!validate_money($valor)) {
-                $valor = str_replace([',', '.'], ['', ''], $valor);
-            }
+            $valor = floatval(str_replace(['.', ','], ['', '.'], $valor));
 
             $data = [
                 'descricao' => set_value('descricao'),
@@ -118,7 +115,7 @@ class Financeiro extends MY_Controller
         if ($this->form_validation->run('despesa') == false) {
             $this->data['custom_error'] = (validation_errors() ? '<div class="form_error">' . validation_errors() . '</div>' : false);
         } else {
-            $recebimento = $this->input->post('recebimento');
+            $recebimento = $this->input->post('data');
 
             try {
                 $recebimento = explode('/', $recebimento);
@@ -128,10 +125,7 @@ class Financeiro extends MY_Controller
             }
 
             $valor = $this->input->post('valor');
-
-            if (!validate_money($valor)) {
-                $valor = str_replace([',', '.'], ['', ''], $valor);
-            }
+            $valor = floatval(str_replace(['.', ','], ['', '.'], $valor));
 
             $data = [
                 'descricao' => set_value('descricao'),
@@ -145,7 +139,7 @@ class Financeiro extends MY_Controller
                 'dataCadastro' => date('Y-m-d H:i:s'),
                 'cadastradoPor' => $this->session->userdata('id')
             ];
-
+            
             if ($this->financeiro_model->add('lancamentos', $data) == true) {
                 $this->session->set_flashdata('success', 'Despesa adicionada com sucesso!');
                 log_info('Adicionou uma despesa');
@@ -159,7 +153,7 @@ class Financeiro extends MY_Controller
         $this->session->set_flashdata('error', 'Ocorreu um erro ao tentar adicionar despesa.');
         redirect($urlAtual);
     }
-
+/*
     public function editar()
     {
         if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'eLancamento')) {
@@ -231,7 +225,7 @@ class Financeiro extends MY_Controller
         ];
         print_r($data);
     }
-
+*/
     public function excluirLancamento()
     {
         if (!$this->permission->checkPermission($this->session->userdata('permissao'), 'dLancamento')) {
@@ -289,10 +283,11 @@ class Financeiro extends MY_Controller
     public function get_table() {
         $condition = [];
         if($this->session->userdata('permissao') == 2) {
-            $condition['lancamentos.cadastradoPor'] = $this->session->userdata('id');
+            $condition['usuarios.emitente_id'] = $this->session->userdata('loja');
         }
         else if($this->input->get('loja') != 0) {
-            $condition['lancamentos.cadastradoPor'] = $this->input->get('loja');
+            $condition['usuarios.emitente_id'] = $this->input->get('loja');
+            $this->data['loja_filtrada'] = $this->input->get('loja');
         }
 
         if($this->input->get('data_inicio')) {
@@ -311,13 +306,19 @@ class Financeiro extends MY_Controller
             $condition['lancamentos.data_pagamento'] = date('Y-m-d');
         }
 
-        $lancamentos = $this->financeiro_model->get('lancamentos', 'lancamentos.*, usuarios.nome as loja', $condition, 100, 0);
+        if($this->input->get('formaPgto') != '') {
+            $condition['lancamentos.forma_pgto'] = $this->input->get('formaPgto');
+            $this->data['pagto_filtrado'] = $this->input->get('formaPgto');
+        }
+
+        $lancamentos = $this->financeiro_model->get('lancamentos', 'lancamentos.*, usuarios.nome as loja', $condition, 1000, 0);
         $receitas = 0;
         $despesas = 0;
         foreach ($lancamentos as $lancamento) {
                         
+            $admin_ou_o_proprio = $this->session->userdata('permissao') != 2 || $lancamento->cadastradoPor == $this->session->userdata('id');
             $actions = [];
-            if ($this->permission->checkPermission($this->session->userdata('permissao'), 'dLancamento')) {
+            if ($this->permission->checkPermission($this->session->userdata('permissao'), 'dLancamento') && $admin_ou_o_proprio) {
                 $actions[] = '<a href="#modalExcluir" data-toggle="modal" role="button" idLancamento="' . $lancamento->idLancamentos . '" class="btn btn-danger tip-top excluir" title="Excluir Lançamento"><i class="fas fa-trash-alt"></i></a>';
             }
             
@@ -336,7 +337,7 @@ class Financeiro extends MY_Controller
                 $lancamento->cliente_fornecedor,
                 $lancamento->descricao,
                 $lancamento->forma_pgto,
-                ['data' => date(('d/m/Y'), strtotime($lancamento->data_pagamento)), 'style' => 'text-align: center'],
+                ['data' => date('d/m/Y', strtotime($lancamento->data_pagamento)), 'style' => 'text-align: center'],
                 ['data' => $lancamento->loja, 'style' => 'text-align: center'],
                 ['data' => 'R$ ' . number_format($lancamento->valor, 2, ',', '.'), 'style' => 'text-align: right'],
                 ['data' => implode(' ',$actions), 'style' => 'text-align: center']
@@ -356,7 +357,7 @@ class Financeiro extends MY_Controller
           </tr>
           <tr>
             <td colspan="7" style="text-align: right"> <strong>Saldo:</strong></td>
-            <td colspan="3" style="text-align: left;"><strong>R$ '.number_format($receitas-$despesas, 2, ',', '.').'</strong></td>
+            <td colspan="3" style="text-align: left;"><strong id="total-saldo">R$ '.number_format($receitas-$despesas, 2, ',', '.').'</strong></td>
           </tr></table>'
         ]);
         $this->table->set_heading('#','Tipo', 'Cliente','Descrição','Forma Pag.','Data','Loja','Valor','Ações');

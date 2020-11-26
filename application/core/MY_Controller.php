@@ -34,9 +34,10 @@ class MY_Controller extends CI_Controller
     {
         parent::__construct();
 
-        if ((!session_id()) || (!$this->session->userdata('logado'))) {
+        if($this->uri->segment(2) != 'backup' && ((!session_id()) || (!$this->session->userdata('logado')))) {
             redirect('login');
         }
+        
         $this->load_configuration();
     }
 

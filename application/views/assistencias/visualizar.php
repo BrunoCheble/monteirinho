@@ -12,6 +12,7 @@
     </div>
     <div class="widget-content tab-content">
         <div id="tab1" class="tab-pane active" style="min-height: 300px">
+
             <div class="accordion" id="collapse-group">
                 <div class="accordion-group widget-box">
                     <div class="accordion-heading">
@@ -123,12 +124,6 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td style="text-align: right"><strong>Ponto de Referência</strong></td>
-                                        <td>
-                                            <?php echo $result->referenciaMorada ?>
-                                        </td>
-                                    </tr>
-                                    <tr>
                                         <td style="text-align: right"><strong>Bairro</strong></td>
                                         <td>
                                             <?php echo $result->bairro ?>
@@ -158,9 +153,85 @@
 
 
         </div>
+
+
         <!--Tab 2-->
         <div id="tab2" class="tab-pane" style="min-height: 300px">
-            <?php echo $table_vendas; ?>
+            <?php if (!$results) { ?>
+
+                <table class="table table-bordered ">
+                    <thead>
+                        <tr style="backgroud-color: #2D335B">
+                            <th>N° Venda</th>
+                            <th>Data da Venda</th>
+                            <th>Faturado</th>
+                            <th>Loja</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        <tr>
+                            <td colspan="6">Nenhuma Venda Cadastrada</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+            <?php
+            } else { ?>
+
+
+
+
+                <table class="table table-bordered ">
+                    <thead>
+                        <tr style="backgroud-color: #2D335B">
+                            <th>N° Venda</th>
+                            <th>Data da Venda</th>
+                            <th>Faturado</th>
+                            <th>Loja</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php
+                            foreach ($results as $r) {
+                                $dataVenda = date(('d/m/Y'), strtotime($r->dataVenda));
+                                if ($r->faturado == 1) {
+                                    $faturado = 'Sim';
+                                } else {
+                                    $faturado = 'Não';
+                                }
+                                echo '<tr>';
+                                echo '<td style="font-weight: bold; text-align:center">' . $r->idVendas . '</td>';
+                                echo '<td style="text-align:center">' . $dataVenda . '</td>';
+                                echo '<td style="text-align:center">' . $faturado . '</td>';
+                                echo '<td style="text-align:center">' . $r->usuario . '</td>';
+                                echo '<td style="width: 250px; text-align: center;">';
+                                if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vVenda')) {
+                                    echo '<a style="margin-right: 1%" href="' . base_url() . 'index.php/vendas/visualizar/' . $r->idVendas . '" class="btn tip-top" title="Ver mais detalhes"><i class="fas fa-eye"></i></a>';
+                                    echo '<a style="margin-right: 1%" href="' . base_url() . 'index.php/vendas/imprimir/' . $r->idVendas . '" target="_blank" class="btn btn-inverse tip-top" title="Imprimir A4"><i class="fas fa-print"></i></a>';
+                                    echo '<a style="margin-right: 1%" href="' . base_url() . 'index.php/vendas/imprimirTermica/' . $r->idVendas . '" target="_blank" class="btn btn-inverse tip-top" title="Imprimir Não Fiscal"><i class="fas fa-print"></i></a>';
+                                }
+                                if ($this->permission->checkPermission($this->session->userdata('permissao'), 'eVenda')) {
+                                    echo '<a style="margin-right: 1%" href="' . base_url() . 'index.php/vendas/editar/' . $r->idVendas . '" class="btn btn-info tip-top" title="Editar venda"><i class="fas fa-edit"></i></a>';
+                                }
+                                if ($this->permission->checkPermission($this->session->userdata('permissao'), 'dVenda')) {
+                                    echo '<a href="#modal-excluir" role="button" data-toggle="modal" venda="' . $r->idVendas . '" class="btn btn-danger tip-top" title="Excluir Venda"><i class="fas fa-trash-alt"></i></a>';
+                                }
+                                echo '</td>';
+                                echo '</tr>';
+                            } ?>
+                        <tr>
+
+                        </tr>
+                    </tbody>
+                </table>
+
+
+            <?php
+            } ?>
+
         </div>
     </div>
 </div>

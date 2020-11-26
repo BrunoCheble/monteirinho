@@ -98,7 +98,41 @@
                                         </td>
 
                                     </tr>
-                                    
+                                    <tr>
+                                        <td colspan="4"></td>
+                                    </tr>
+
+                                    <tr>
+
+                                        <td>
+                                            <label>
+                                                <input name="vAssistencia" class="marcar" type="checkbox" checked="checked" value="1" />
+                                                <span class="lbl"> Visualizar Assistência</span>
+                                            </label>
+                                        </td>
+
+                                        <td>
+                                            <label>
+                                                <input name="aAssistencia" class="marcar" type="checkbox" value="1" />
+                                                <span class="lbl"> Adicionar Assistência</span>
+                                            </label>
+                                        </td>
+
+                                        <td>
+                                            <label>
+                                                <input name="eAssistencia" class="marcar" type="checkbox" value="1" />
+                                                <span class="lbl"> Editar Assistência</span>
+                                            </label>
+                                        </td>
+                                        <td>
+                                            <label>
+                                                <input name="dAssistencia" class="marcar" type="checkbox" value="1" />
+                                                <span class="lbl"> Excluir Assistência</span>
+                                            </label>
+                                        </td>
+
+                                    </tr>
+
                                     <tr>
                                         <td colspan="4"></td>
                                     </tr>
